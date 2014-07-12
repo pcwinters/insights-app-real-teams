@@ -1,0 +1,23 @@
+{
+   "name": "insights-app-real-teams",
+   "className": "insights-app-real-teams",
+   "server": "https://rally1.rallydev.com",
+   "sdk": "2.0rc3",
+   "html": [      
+      "build/index.html"
+   ],
+   "javascript": [
+      "//rally1.rallydev.com/insight/static/sdpi/app.js"
+      "bower_components/lodash/dist/lodash.min.js",
+      "bower_components/jquery/dist/jquery.min.js",
+      "bower_components/angular/angular.min.js",
+      "bower_components/momentjs/min/moment.min.js",
+      "build/index.js"
+   ],
+   "css": [
+      "build/index.css"
+   ],
+   "scripts": {
+      "prebuild": "./node_modules/.bin/grunt"
+   }
+}

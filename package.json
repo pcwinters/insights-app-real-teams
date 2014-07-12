@@ -1,0 +1,27 @@
+{
+  "name": "insights-app-real-teams",
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-cli": "~0.1.9",
+    "bower": "^1.3.4",
+    "karma": "^0.12.16",
+    "grunt-karma": "^0.8.3",
+    "karma-jasmine": "^0.1.5",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "grunt-contrib-jade": "^0.12.0",
+    "grunt-contrib-coffee": "^0.10.1",
+    "karma-coffee-preprocessor": "^0.2.1",
+    "matchdep": "^0.3.0",
+    "tmp": "0.0.23",
+    "grunt-contrib-clean": "^0.5.0",
+    "rally-app-builder": "^0.9.8",
+    "grunt-contrib-stylus": "^0.18.0",
+    "jshint": "^2.5.2"
+  },
+  "scripts": {
+    "test": "grunt",
+    "postinstall": "./node_modules/bower/bin/bower install"
+  }
+}
