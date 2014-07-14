@@ -21,16 +21,22 @@ module.exports = (grunt) ->
 		clean:
 			build: 'build'
 
+		watch:
+			files: 'src/**/*.*'
+			tasks: ['build']
+			options:
+				interrupt: true
+
 		coffee:
 			build:
 				options:
 					bare: true
+					join: true
 				expand: true
 				flatten: false
-				cwd: 'src'
-				src: '**/*.coffee'
-				dest: 'build'
-				ext: '.js'
+				files:
+					'build/index.js': ['src/**/*.coffee']
+
 		stylus:
 			build:
 				options:

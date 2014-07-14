@@ -1,1 +1,23 @@
-.test
+div(ng-controller="RootCtrl")
+	.loading(ng-if="!state.projectPromise.$finished") Loading child projects
+
+	.container-fluid(ng-if="state.projectPromise.$finished")
+		.row
+			.col-xs-3.project-picker
+				input(ng-model="state.searchTerm", placeholder="Filter by name")
+				ul.rui-tree-outline(
+					rui-tree="state.nodes track by ObjectID", 
+					rui-tree-expandable="", 
+					rui-tree-selectable="deselect",
+					rui-tree-selected-node="state.selectedNode"
+					rui-tree-search="state.searchTerm search by Name")
+			.col-xs-9.project-information
+				div(ng-if="state.selectedNode")
+					h3(ng-bind='state.selectedNode.Name')
+					div(ng-if="!state.selectedNode.$metricsPromise.$finished") Loading project	metrics			
+					ul.metric-readout(ng-if="state.selectedNode.$metricsPromise.$finished")
+						li(ng-repeat="(metricName, metricValue) in state.selectedNode.metrics")
+							span(ng-bind="metricName")
+							span &nbsp;:&nbsp;
+							span(ng-bind="metricValue.value")
+				div(ng-if="!state.selectedNode") Choose a project to get metric information

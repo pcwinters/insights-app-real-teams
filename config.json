@@ -1,20 +1,31 @@
 {
-   "name": "insights-app-real-teams",
-   "className": "insights-app-real-teams",
+   "name": "insights.app.real.teams",
+   "className": "insights.app.real.teams",
+   "framework": "angular",
    "server": "https://rally1.rallydev.com",
    "sdk": "2.0rc3",
-   "html": [      
+   "html": [
       "build/index.html"
    ],
+   "jshint": false,
    "javascript": [
-      "//rally1.rallydev.com/insight/static/sdpi/app.js"
+      "bower_components/async/lib/async.js",
       "bower_components/lodash/dist/lodash.min.js",
-      "bower_components/jquery/dist/jquery.min.js",
-      "bower_components/angular/angular.min.js",
       "bower_components/momentjs/min/moment.min.js",
-      "build/index.js"
+      "bower_components/angular-appsdk/dist/rally.js",
+      "bower_components/rui-angular/rui.js",
+      "bower_components/Lumenize/deploy/Lumenize-min.js",
+      "bower_components/validate/validate.min.js",
+      "bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js",
+      "build/index.js",
+      "//code.jquery.com/jquery-2.1.1.min.js",
+      "//ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular.js",
+      "//ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular-sanitize.js",
+      "https://test13cluster.rallydev.com/insight/static/sdpi/app.js"
    ],
    "css": [
+      "bower_components/bootstrap/dist/css/bootstrap.min.css",
+      "bower_components/rui-angular/assets/css/styles.css",
       "build/index.css"
    ],
    "scripts": {

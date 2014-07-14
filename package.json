@@ -18,7 +18,8 @@
     "grunt-contrib-clean": "^0.5.0",
     "rally-app-builder": "^0.9.8",
     "grunt-contrib-stylus": "^0.18.0",
-    "jshint": "^2.5.2"
+    "jshint": "^2.5.2",
+    "grunt-contrib-watch": "^0.6.1"
   },
   "scripts": {
     "test": "grunt",
