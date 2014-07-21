@@ -6762,7 +6762,7 @@ return a.replace(b,function(a,b){return(b?c:"")+a.toLowerCase()})}var b={placeme
 
 angular.module('insights.app.real.teams', ['ui.bootstrap', 'rui.tree', 'rally.app', 'rally.api.wsapi', 'sdpi.api.services.metrics', 'insights.app.real.teams.tree']).config(function($slmProvider, $sdpiProvider) {
   $slmProvider.setBaseUrl('//rally1.rallydev.com/slm/');
-  return $sdpiProvider.setBaseUrl('https://test13cluster.rallydev.com/insight/');
+  return $sdpiProvider.setBaseUrl('//rally1.rallydev.com/insight/');
 }).run(function($rally, $rootScope) {
   if ($rootScope.app == null) {
     $rootScope.app = {};
