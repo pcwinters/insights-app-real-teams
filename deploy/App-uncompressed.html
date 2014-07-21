@@ -4737,6 +4737,7 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
     function RuiTreeExpandCollapseCtrl($scope, $timeout) {
       this.$scope = $scope;
       this.$timeout = $timeout;
+      this.startExpanded = __bind(this.startExpanded, this);
       this.getParent = __bind(this.getParent, this);
       this.getNodeState = __bind(this.getNodeState, this);
       this.expandTo = __bind(this.expandTo, this);
@@ -4785,6 +4786,11 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
     RuiTreeExpandCollapseCtrl.prototype.getParent = function (node) {
       return this.$scope.$ruiTree.getParent(node);
     };
+    RuiTreeExpandCollapseCtrl.prototype.startExpanded = function (startExpanded) {
+      if (this.$scope.$ruiTree.isRootTree) {
+        return this.$scope.$ruiTree.rootState.startExpanded = startExpanded;
+      }
+    };
     return RuiTreeExpandCollapseCtrl;
   }()).controller('RuiTreeNodeExpandCollapseCtrl', RuiTreeNodeExpandCollapseCtrl = function () {
     function RuiTreeNodeExpandCollapseCtrl($scope) {
@@ -4793,12 +4799,24 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
       this.watchChildrenAndExpand = __bind(this.watchChildrenAndExpand, this);
       this.toggleExpand = __bind(this.toggleExpand, this);
       this.getState = __bind(this.getState, this);
+      this.watchStateForFirstLoad = __bind(this.watchStateForFirstLoad, this);
       _.assign(this.$scope.$ruiTreeNode, { toggleExpand: this.toggleExpand });
       this.$scope.$watch('$ruiTreeNode.hasChildren', this.watchChildrenAndExpand);
       this.$scope.$watch('$ruiTreeNode.toggleDisabled', this.watchChildrenAndExpand);
       this.$scope.$watch('$ruiTreeNode.state.expand', this.watchChildrenAndExpand);
       this.$scope.$watch('$ruiTreeNode.hasChildrenAndExpanded', this.watchToShowSubTree);
+      this.$scope.$watch('$ruiTreeNode.state', this.watchStateForFirstLoad);
     }
+    RuiTreeNodeExpandCollapseCtrl.prototype.watchStateForFirstLoad = function (state) {
+      if (state == null) {
+        return;
+      }
+      if (state.expand == null) {
+        if (this.$scope.$ruiTree.rootState.startExpanded) {
+          return state.expand = true;
+        }
+      }
+    };
     RuiTreeNodeExpandCollapseCtrl.prototype.getState = function () {
       return this.$scope.$ruiTreeNode.state;
     };
@@ -5272,13 +5290,23 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
 (function () {
   angular.module('rui.tree.directives.expandCollapse', ['rui.tree.controllers.expandCollapse']).directive('ruiTreeExpandable', function () {
     return {
-      require: ['ruiTreeCtrl'],
+      require: [
+        'ruiTreeExpandable',
+        'ruiTreeCtrl'
+      ],
       controller: 'RuiTreeExpandCollapseCtrl',
       compile: function ($element) {
         $element.addClass('rui-tree-outline');
         $element.addClass('rui-tree-expandable');
         $element.find('.rui-tree-nodes').attr('rui-tree-node-expandable', '');
-        return function () {
+        return {
+          pre: function ($scope, $element, $attrs, _arg) {
+            var attribute, controller, startExpanded;
+            controller = _arg[0];
+            attribute = $attrs['ruiTreeExpandable'];
+            startExpanded = _.contains(attribute, 'startExpanded');
+            return controller.startExpanded(startExpanded);
+          }
         };
       }
     };
@@ -6606,6 +6634,16 @@ angular.module('rui.templates').run(['$templateCache', function($templateCache) 
   );
 
 
+  $templateCache.put('rui/alm/projectPicker/templates/projectPickerNode.html',
+    "<li rui-tree-node-ctrl=rui-tree-node-ctrl rui-alm-project-picker-node-ctrl=rui-alm-project-picker-node-ctrl ng-show=$ruiAlmProjectPickerNode.showNode rui-tree-node-throttle-sub-tree=$ruiAlmProjectPicker.throttleSubTree rui-tree-node-eager-build=$ruiAlmProjectPicker.eagerBuild class=\"rui-tree-node rui-alm-project-picker-node\"><div class=node-container><div class=rui-alm-project-picker-expand-toggle-area><span ng-click=$ruiAlmProjectPickerNode.toggleExpand() ng-if=$ruiAlmProjectPickerNode.canToggleExpand ng-class=\"{'rui-alm-project-picker-toggle-disabled': $ruiAlmProjectPickerNode.toggleDisabled}\" class=rui-alm-project-picker-expand-toggle><a ng-if=$ruiAlmProjectPickerNode.canExpand class=icon-expand></a><a ng-if=$ruiAlmProjectPickerNode.canCollapse class=icon-collapse></a></span></div><div ng-click=$ruiAlmProjectPickerNode.selectNode() ng-class=\"{'rui-alm-project-picker-selected': $ruiAlmProjectPickerNode.state.selected, 'rui-alm-project-picker-in-select-path': $ruiAlmProjectPickerNode.state.inSelectPath }\" class=rui-alm-project-picker-content><span ng-bind=$ruiTreeNode.node.name ng-if=\"!$ruiAlmProjectPicker.isSearching || !$ruiAlmProjectPickerNode.state.searchMatch\" class=name></span><span ng-bind-html=$ruiAlmProjectPickerNode.state.searchMatchName ng-if=\"$ruiAlmProjectPicker.isSearching &amp;&amp; $ruiAlmProjectPickerNode.state.searchMatch\" class=name-with-match></span><span ng-if=$ruiTreeNode.node.isWorkspace class=is-workspace>&nbsp;(workspace)</span></div></div><div class=rui-tree-node-sub-tree-placeholder></div></li>"
+  );
+
+
+  $templateCache.put('rui/alm/projectPicker/templates/projectPickerTree.html',
+    "<ul rui-alm-project-picker-tree-ctrl=rui-alm-project-picker-tree-ctrl rui-tree-ctrl=rui-tree-ctrl class=\"rui-tree rui-alm-project-picker-tree\"><li ng-repeat=\"$node in $ruiTree.root.children\" rui-alm-project-picker-node=$node class=rui-tree-nodes></li></ul>"
+  );
+
+
   $templateCache.put('rui/cardboard/template/rui-card.html',
     "<div class=rui-cardboard-card><div class=card-color ng-style=\"{backgroundColor: $card.color}\"></div><div class=card-content ng-transclude=\"\"></div></div>"
   );
@@ -6800,7 +6838,7 @@ angular.module('insights.app.real.teams', ['ui.bootstrap', 'rui.tree', 'rally.ap
         return dataPoint;
       };
     })(this)).then(function(dataPoint) {
-      return projectScope.metrics = dataPoint.data;
+      return projectScope.metrics = dataPoint != null ? dataPoint.data : void 0;
     })["finally"](function() {
       return projectScope.$metricsPromise.$finished = true;
     });
@@ -13150,6 +13188,8 @@ button.close {
 }
 .rui-tree {
   list-style: none;
+  margin-left: 25px;
+  padding: 0;
 }
 .rui-tree li.rui-tree-node {
   white-space: nowrap;
@@ -13160,24 +13200,1257 @@ button.close {
 
     </style>
     <style type="text/css">
+        .badge {
+  font-size: .7em;
+  padding: 4px 6px;
+  margin: 0 20px 0 5px;
+  border-radius: 2px;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.badge.new {
+  color: #222;
+  background: #fad200;
+  font-family: "ProximaNovaSemiBold", sans-serif;
+}
+.badge.new:hover {
+  background: #ffdd82;
+  cursor: pointer;
+}
+.picto {
+  font-family: "NotoSans";
+}
+.button {
+  border-radius: 2px;
+  text-decoration: none;
+}
+.button:hover {
+  cursor: pointer;
+}
+.button.small {
+  padding: 5px 8px;
+  font-size: .75em;
+  font-family: "NotoSans";
+}
+.button.medium {
+  padding: 8px 10px;
+  font-size: .9em;
+  font-family: "NotoSans";
+}
+.button.large {
+  padding: 10px 12px;
+  font-size: 1em;
+  font-family: "NotoSansBold";
+}
+.button.disabled {
+  background: #d6d6d6;
+  color: #fff;
+}
+.button.disabled:hover {
+  text-decoration: none;
+  cursor: default;
+}
+.button.dark {
+  background: #666;
+  color: #444444;
+}
+.button.primary {
+  background: #00a9e0;
+  color: #fff;
+}
+.button.primary:hover {
+  background: #29beff;
+  color: #fff;
+  text-decoration: none;
+}
+.flaire > .content {
+  display: inline-block;
+  border-radius: 2px;
+  text-decoration: none;
+  font-size: .9em;
+  position: relative;
+  font-family: "NotoSans", Helvetica, Arial, sans-serif;
+}
+.flaire > .content .id {
+  font-family: "NotoSansBold";
+}
+.flaire > .content > .message {
+  padding: 10px 32px 10px 6px;
+  color: #222;
+}
+.flaire > .content > .message a {
+  color: #000000;
+}
+.flaire > .content > .cancel {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  opacity: .2;
+  width: 25px;
+  font-size: 1.5em;
+  border-radius: 2px;
+  background: #444;
+}
+.flaire > .content > .cancel:hover {
+  opacity: .3;
+  cursor: pointer;
+}
+.flaire > .content > .cancel > .icon-cancel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -10px;
+  margin-top: -10px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  color: #ffffff;
+}
+.flaire.success > .content {
+  background: #8dc63f;
+}
+.flaire.attention > .content {
+  background: #fad200;
+}
+.flaire.failure > .content {
+  background: #f66349;
+}
+.flaire.not-dismissable .message {
+  padding-right: 6px;
+}
+.flaire.not-dismissable .cancel {
+  display: none;
+}
+.popover {
+  background: #444;
+  padding: 10px;
+  border-radius: 2px;
+  color: #fff;
+  float: left;
+  font-size: .9em;
+  font-family: "ProximaNova", sans-serif;
+  margin: 20px;
+}
+.popover .arrow {
+  color: #444;
+  font-size: 2em;
+  margin: -27px 0;
+  position: absolute;
+  font-family: "Rally";
+}
+.popover .header {
+  font-family: "ProximaNovaSemiBold";
+  font-size: 1.2em;
+  color: #fff;
+  margin-bottom: 10px;
+  margin-top: 15px;
+  height: 30px;
+}
+.popover.bottom .arrow {
+  top: initial;
+  left: 50%;
+}
+.toggle-container {
+  margin-right: 40px;
+  position: relative;
+}
+.toggle-container .label {
+  font-family: "ProximaNovaSemiBold";
+  font-size: .75em;
+  text-transform: uppercase;
+  color: #444;
+  margin: 0 0 5px 0;
+}
+.toggle-container .toggle {
+  border-radius: 2px;
+  border: 1px solid #c0c0c0;
+  float: left;
+}
+.toggle-container .toggle .selected {
+  background: #00a9e0;
+  color: #ffffff;
+}
+.toggle-container .toggle .unselected {
+  background: #fff;
+  color: #666666;
+}
+.toggle-container .toggle .unselected:hover {
+  background: #d6d6d6;
+  color: #444;
+  text-decoration: none;
+}
+.toggle-container .toggle .button {
+  padding: 6px 8px;
+  float: left;
+}
+.toggle-container .toggle .button:not(:first-child) {
+  border-left: 1px solid #c0c0c0;
+}
+.toggle-container .toggle .button.unselected:hover {
+  cursor: pointer;
+}
+.toggle-container .toggle .button.unselected:hover.disabled {
+  cursor: not-allowed;
+}
+.toggle-container .picto {
+  font-family: "Rally";
+  font-size: 1.1em;
+  padding: 0;
+}
+@font-face {
+  font-family: 'Rally';
+  src: url('fonts/Rally.eot');
+  src: url('fonts/Rally.eot#iefix') format('embedded-opentype'), url('fonts/Rally.woff') format('woff'), url('fonts/Rally.ttf') format('truetype'), url('fonts/Rally.svg#Rally') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+[data-icon]:before {
+  font-family: 'Rally';
+  content: attr(data-icon);
+  speak: none;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.icon-attachment,
+.icon-previous,
+.icon-reply-all,
+.icon-next,
+.icon-user,
+.icon-users,
+.icon-user-add,
+.icon-export,
+.icon-share,
+.icon-not-favorite,
+.icon-thumbs-up,
+.icon-thumbs-down,
+.icon-chat,
+.icon-comment,
+.icon-home,
+.icon-popup,
+.icon-search,
+.icon-print,
+.icon-story,
+.icon-snapshot,
+.icon-gear,
+.icon-flag,
+.icon-link,
+.icon-visible,
+.icon-to-do,
+.icon-calendar,
+.icon-color,
+.icon-dashboard,
+.icon-change-set,
+.icon-cone,
+.icon-portfolio,
+.icon-task,
+.icon-box,
+.icon-rss,
+.icon-line,
+.icon-pie,
+.icon-graph,
+.icon-bars,
+.icon-lock,
+.icon-lock-open,
+.icon-ok,
+.icon-cancel,
+.icon-collapse,
+.icon-expand,
+.icon-minus,
+.icon-plus,
+.icon-cross,
+.icon-close,
+.icon-none,
+.icon-info-circle,
+.icon-info,
+.icon-question,
+.icon-help,
+.icon-history,
+.icon-back,
+.icon-delete,
+.icon-upload,
+.icon-download,
+.icon-archive,
+.icon-save,
+.icon-board,
+.icon-grid,
+.icon-folder,
+.icon-images,
+.icon-shrink,
+.icon-hierarchy,
+.icon-arrow-left,
+.icon-arrow-down,
+.icon-arrow-up,
+.icon-arrow-right,
+.icon-full-arrow-left,
+.icon-full-arrow-down,
+.icon-full-arrow-up,
+.icon-full-arrow-right,
+.icon-chevron-down,
+.icon-chevron-up,
+.icon-chevron-right,
+.icon-small-chevron-left,
+.icon-small-chevron-down,
+.icon-small-chevron-up,
+.icon-small-chevron-right,
+.icon-dropdown,
+.icon-more,
+.icon-circle,
+.icon-square,
+.icon-feedback,
+.icon-setup,
+.icon-predecessor,
+.icon-dots,
+.icon-test,
+.icon-favorite,
+.icon-chevron-left,
+.icon-edit,
+.icon-triangle,
+.icon-add,
+.icon-file,
+.icon-warning,
+.icon-split,
+.icon-filter,
+.icon-ready,
+.icon-blocked,
+.icon-successor,
+.icon-embed,
+.icon-refresh,
+.icon-enlarge,
+.icon-mail,
+.icon-add-column,
+.icon-donut,
+.icon-tag,
+.icon-progress,
+.icon-scope-down,
+.icon-scope-up,
+.icon-empty,
+.icon-scope-up-down,
+.icon-fiveDots,
+.icon-partial,
+.icon-drag,
+.icon-threeDots,
+.icon-defect,
+.icon-deploy,
+.icon-admin,
+.icon-post,
+.icon-testCase,
+.icon-children,
+.icon-test-run,
+.icon-leave,
+.icon-recycle,
+.icon-left,
+.icon-right,
+.icon-down,
+.icon-up,
+.icon-workspace,
+.icon-program,
+.icon-defectSuite,
+.icon-right_hollow,
+.icon-down_hollow,
+.icon-down_full,
+.icon-right_full,
+.icon-addTag,
+.icon-infinity,
+.icon-hourglass,
+.icon-bell,
+.icon-leaf,
+.icon-idea,
+.icon-testSet,
+.icon-copy,
+.icon-copy_from {
+  font-family: 'Rally';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+.icon-attachment:before {
+  content: "\e002";
+}
+.icon-previous:before {
+  content: "\e003";
+}
+.icon-reply-all:before {
+  content: "\e004";
+}
+.icon-next:before {
+  content: "\e005";
+}
+.icon-user:before {
+  content: "\e006";
+}
+.icon-users:before {
+  content: "\e007";
+}
+.icon-user-add:before {
+  content: "\e008";
+}
+.icon-export:before {
+  content: "\e00a";
+}
+.icon-share:before {
+  content: "\e00c";
+}
+.icon-not-favorite:before {
+  content: "\e00e";
+}
+.icon-thumbs-up:before {
+  content: "\e00f";
+}
+.icon-thumbs-down:before {
+  content: "\e010";
+}
+.icon-chat:before {
+  content: "\e011";
+}
+.icon-comment:before {
+  content: "\e012";
+}
+.icon-home:before {
+  content: "\e013";
+}
+.icon-popup:before {
+  content: "\e014";
+}
+.icon-search:before {
+  content: "\e015";
+}
+.icon-print:before {
+  content: "\e016";
+}
+.icon-story:before {
+  content: "\e017";
+}
+.icon-snapshot:before {
+  content: "\e019";
+}
+.icon-gear:before {
+  content: "\e01a";
+}
+.icon-flag:before {
+  content: "\e01b";
+}
+.icon-link:before {
+  content: "\e01c";
+}
+.icon-visible:before {
+  content: "\e01d";
+}
+.icon-to-do:before {
+  content: "\e01e";
+}
+.icon-calendar:before {
+  content: "\e01f";
+}
+.icon-color:before {
+  content: "\e020";
+}
+.icon-dashboard:before {
+  content: "\e021";
+}
+.icon-change-set:before {
+  content: "\e022";
+}
+.icon-cone:before {
+  content: "\e023";
+}
+.icon-portfolio:before {
+  content: "\e024";
+}
+.icon-task:before {
+  content: "\e025";
+}
+.icon-box:before {
+  content: "\e026";
+}
+.icon-rss:before {
+  content: "\e027";
+}
+.icon-line:before {
+  content: "\e029";
+}
+.icon-pie:before {
+  content: "\e02a";
+}
+.icon-graph:before {
+  content: "\e02b";
+}
+.icon-bars:before {
+  content: "\e02c";
+}
+.icon-lock:before {
+  content: "\e02d";
+}
+.icon-lock-open:before {
+  content: "\e02e";
+}
+.icon-ok:before,
+.checkbox:checked:before {
+  content: "\e02f";
+}
+.icon-cancel:before {
+  content: "\e030";
+}
+.icon-collapse:before {
+  content: "\e031";
+}
+.icon-expand:before {
+  content: "\e032";
+}
+.icon-minus:before {
+  content: "\e033";
+}
+.icon-plus:before {
+  content: "\e034";
+}
+.icon-cross:before {
+  content: "\e035";
+}
+.icon-close:before {
+  content: "\e036";
+}
+.icon-none:before {
+  content: "\e039";
+}
+.icon-info-circle:before {
+  content: "\e03a";
+}
+.icon-info:before {
+  content: "\e03b";
+}
+.icon-question:before {
+  content: "\e03c";
+}
+.icon-help:before {
+  content: "\e03d";
+}
+.icon-history:before {
+  content: "\e03f";
+}
+.icon-back:before {
+  content: "\e040";
+}
+.icon-delete:before {
+  content: "\e041";
+}
+.icon-upload:before {
+  content: "\e042";
+}
+.icon-download:before {
+  content: "\e043";
+}
+.icon-archive:before {
+  content: "\e044";
+}
+.icon-save:before {
+  content: "\e045";
+}
+.icon-board:before {
+  content: "\e046";
+}
+.icon-grid:before {
+  content: "\e047";
+}
+.icon-folder:before {
+  content: "\e048";
+}
+.icon-images:before {
+  content: "\e049";
+}
+.icon-shrink:before {
+  content: "\e04b";
+}
+.icon-hierarchy:before {
+  content: "\e04c";
+}
+.icon-arrow-left:before {
+  content: "\e04d";
+}
+.icon-arrow-down:before {
+  content: "\e04e";
+}
+.icon-arrow-up:before {
+  content: "\e04f";
+}
+.icon-arrow-right:before {
+  content: "\e050";
+}
+.icon-full-arrow-left:before {
+  content: "\e055";
+}
+.icon-full-arrow-down:before {
+  content: "\e056";
+}
+.icon-full-arrow-up:before {
+  content: "\e057";
+}
+.icon-full-arrow-right:before {
+  content: "\e058";
+}
+.icon-chevron-down:before {
+  content: "\e05a";
+}
+.icon-chevron-up:before {
+  content: "\e05b";
+}
+.icon-chevron-right:before {
+  content: "\e05c";
+}
+.icon-small-chevron-left:before {
+  content: "\e05d";
+}
+.icon-small-chevron-down:before {
+  content: "\e05e";
+}
+.icon-small-chevron-up:before {
+  content: "\e05f";
+}
+.icon-small-chevron-right:before {
+  content: "\e060";
+}
+.icon-dropdown:before {
+  content: "\e061";
+}
+.icon-more:before {
+  content: "\e062";
+}
+.icon-circle:before {
+  content: "\e063";
+}
+.icon-square:before {
+  content: "\e064";
+}
+.icon-feedback:before {
+  content: "\e065";
+}
+.icon-setup:before {
+  content: "\e066";
+}
+.icon-predecessor:before {
+  content: "\e067";
+}
+.icon-dots:before {
+  content: "\e068";
+}
+.icon-test:before {
+  content: "\e069";
+}
+.icon-favorite:before {
+  content: "\e00d";
+}
+.icon-chevron-left:before {
+  content: "\e059";
+}
+.icon-edit:before {
+  content: "\e001";
+}
+.icon-triangle:before {
+  content: "\e000";
+}
+.icon-add:before {
+  content: "\41";
+}
+.icon-file:before {
+  content: "\50";
+}
+.icon-warning:before {
+  content: "\57";
+}
+.icon-split:before {
+  content: "\53";
+}
+.icon-filter:before {
+  content: "\46";
+}
+.icon-ready:before {
+  content: "\43";
+}
+.icon-blocked:before {
+  content: "\42";
+}
+.icon-successor:before {
+  content: "\21";
+}
+.icon-embed:before {
+  content: "\22";
+}
+.icon-refresh:before {
+  content: "\23";
+}
+.icon-enlarge:before {
+  content: "\e04a";
+}
+.icon-mail:before {
+  content: "\e009";
+}
+.icon-add-column:before {
+  content: "\e00b";
+}
+.icon-donut:before {
+  content: "\e028";
+}
+.icon-tag:before {
+  content: "\54";
+}
+.icon-progress:before {
+  content: "\26";
+}
+.icon-scope-down:before {
+  content: "\27";
+}
+.icon-scope-up:before {
+  content: "\28";
+}
+.icon-empty:before {
+  content: "\24";
+}
+.icon-scope-up-down:before {
+  content: "\29";
+}
+.icon-fiveDots:before {
+  content: "\2a";
+}
+.icon-partial:before {
+  content: "\2d";
+}
+.icon-drag:before {
+  content: "\2e";
+}
+.icon-threeDots:before {
+  content: "\2b";
+}
+.icon-defect:before {
+  content: "\25";
+}
+.icon-deploy:before {
+  content: "\2c";
+}
+.icon-admin:before {
+  content: "\2f";
+}
+.icon-post:before {
+  content: "\30";
+}
+.icon-testCase:before {
+  content: "\31";
+}
+.icon-children:before {
+  content: "\32";
+}
+.icon-test-run:before {
+  content: "\33";
+}
+.icon-leave:before {
+  content: "\34";
+}
+.icon-recycle:before {
+  content: "\35";
+}
+.icon-left:before {
+  content: "\36";
+}
+.icon-right:before {
+  content: "\37";
+}
+.icon-down:before {
+  content: "\38";
+}
+.icon-up:before {
+  content: "\39";
+}
+.icon-workspace:before {
+  content: "\3a";
+}
+.icon-program:before {
+  content: "\3b";
+}
+.icon-defectSuite:before {
+  content: "\3c";
+}
+.icon-right_hollow:before {
+  content: "\3d";
+}
+.icon-down_hollow:before {
+  content: "\3e";
+}
+.icon-down_full:before {
+  content: "\3f";
+}
+.icon-right_full:before {
+  content: "\40";
+}
+.icon-addTag:before {
+  content: "\44";
+}
+.icon-infinity:before {
+  content: "\45";
+}
+.icon-hourglass:before {
+  content: "\47";
+}
+.icon-bell:before {
+  content: "\48";
+}
+.icon-leaf:before {
+  content: "\49";
+}
+.icon-idea:before {
+  content: "\4a";
+}
+.icon-testSet:before {
+  content: "\4b";
+}
+.icon-copy:before {
+  content: "\4c";
+}
+.icon-copy_from:before {
+  content: "\4d";
+}
+.field,
+input {
+  background: #fff;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  border: 1px solid #d6d6d6;
+  padding: 8px;
+  font-family: "NotoSans", sans-serif;
+  font-size: .8em;
+  margin: 4px 10px 10px 0;
+}
+.field:hover,
+input:hover,
+input:hover {
+  border: 1px solid #00a9e0;
+}
+.checkbox {
+  -webkit-appearance: none;
+  background-color: #f6f6f6;
+  border: 1px solid #c0c0c0;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 -15px 10px -12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 -15px 10px -12px rgba(0, 0, 0, 0.05);
+  padding: 8px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  display: inline-block;
+  position: relative;
+  top: 4px;
+  margin-bottom: 0;
+}
+.checkbox:checked {
+  background-color: #cceef9;
+  border: 1px solid #82d3ed;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 -15px 10px -12px rgba(0, 0, 0, 0.05), inset 15px 10px -12px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 -15px 10px -12px rgba(0, 0, 0, 0.05), inset 15px 10px -12px rgba(255, 255, 255, 0.1);
+  color: #99a1a7;
+  font-family: "Rally";
+}
+.checkbox:checked:before {
+  font-size: 12px;
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  color: #00a9e0;
+}
+.checkbox.disabled:checked:before {
+  background-color: #fff;
+  color: #c0c0c0;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 -15px 10px -12px rgba(0, 0, 0, 0.05), inset 15px 10px -12px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 -15px 10px -12px rgba(0, 0, 0, 0.05), inset 15px 10px -12px rgba(255, 255, 255, 0.1);
+}
+.checkbox:hover,
+.radio:hover {
+  cursor: pointer;
+}
+.checkbox:active,
+.checkbox:checked:active {
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.checkbox.disabled,
+.checkbox.disabled:active {
+  background-color: #fff;
+  border: 1px solid #d6d6d6;
+  color: #c0c0c0;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.checkbox.disabled:hover,
+.radio.disabled:hover {
+  cursor: default;
+}
+.dropdown-container {
+  zoom: 1;
+  width: 25%;
+  position: relative;
+  margin-bottom: 20px;
+  min-width: 250px;
+}
+.dropdown-container:before,
+.dropdown-container:after {
+  content: "";
+  display: table;
+}
+.dropdown-container:after {
+  clear: both;
+}
+.dropdown-container:focus {
+  outline: none;
+}
+.dropdown-container ul {
+  margin: -11px 10px 10px 0;
+  font-family: "Noto Sans", sans-serif;
+  font-size: .8em;
+  line-height: 2em;
+  border-right: 1px solid #d6d6d6;
+  border-left: 1px solid #d6d6d6;
+  list-style: none;
+}
+.dropdown-container li {
+  padding: 2px 8px;
+  border-bottom: 1px solid #d6d6d6;
+  margin: 0 0 0 0;
+  list-style: none;
+}
+.dropdown-container li.active {
+  background: #e6e6e6;
+}
+.dropdown-container li:hover {
+  background: #00a9e0;
+  cursor: pointer;
+  color: #ffffff;
+}
+.dropdown-container .field {
+  margin-right: 0;
+  margin-left: 0;
+}
+.dropdown-container .field.dropdown .icons:hover,
+.dropdown-container .field.chooser .icons:hover {
+  color: #00a9e0;
+  cursor: pointer;
+}
+.dropdown-container .field.dropdown .icons,
+.dropdown-container .field.chooser .icons {
+  color: #c0c0c0;
+  font-size: 1.5em;
+  padding: 5px;
+  float: right;
+  margin-top: -8px;
+  margin-right: -10px;
+}
+.dropdown-container .dropdown.open .icons {
+  color: #00a9e0;
+}
+.field.error {
+  border: 1px solid #ee1c25;
+}
+.errorMessage {
+  background: #ee1c25;
+  border: 1px solid #ee1c25;
+  color: #fff;
+  padding: 5px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  font-family: "ProximaNova", sans-serif;
+  font-size: .9em;
+  margin-top: -11px;
+  line-height: 1.2em;
+}
+.required {
+  width: 0;
+  height: 0;
+  border-top: 10px solid #ee1c25;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  position: absolute;
+  margin-top: 4px;
+}
+
+    </style>
+    <style type="text/css">
+        h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "ProximaNova", Helvetica, Arial, sans-serif;
+}
+label {
+  font-family: "ProximaNovaSemiBold", sans-serif;
+  font-size: 12px;
+  text-transform: uppercase;
+  clear: both;
+}
+label.roleDescription {
+  text-transform: none;
+  font: 14px "Notosans", sans-serif;
+}
+.btn.disabled {
+  cursor: not-allowed;
+  pointer-events: auto;
+}
+.btn-primary {
+  background-color: #00a9e0;
+  border-color: #29beff;
+}
+.btn-primary:hover {
+  background-color: #29beff;
+  border-color: #00a9e0;
+}
+.btn-primary.disabled {
+  background-color: #82d3ed;
+  border-color: #00a9e0;
+}
+.btn-primary.disabled:hover {
+  background-color: #29beff;
+  border-color: #00a9e0;
+}
+.btn-secondary {
+  background-color: #d6d6d6;
+  border-color: #c0c0c0;
+  color: #444444;
+}
+.btn-secondary:hover {
+  background-color: #c0c0c0;
+  border-color: #c0c0c0;
+}
+.btn-secondary.disabled {
+  background-color: #f6f6f6;
+  border-color: #e6e6e6;
+}
+.btn-secondary.disabled:hover {
+  background-color: #e6e6e6;
+  border-color: #d6d6d6;
+}
+legend {
+  line-height: 40px;
+}
+.modal[ng-show],
+.modal[ng-hide],
+.modal[ng-if],
+.modal.open {
+  display: block;
+}
+.modal[ng-show] .modal-dialog,
+.modal[ng-hide] .modal-dialog,
+.modal[ng-if] .modal-dialog,
+.modal.open .modal-dialog {
+  padding-left: 0;
+  padding-right: 0;
+}
+.dropdown-menu {
+  font-size: inherit;
+}
+.nav-tabs > li > a {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  line-height: 20px;
+}
+.nav-tabs > li > a,
+.nav-pills > li > a {
+  padding-right: 12px;
+  padding-left: 12px;
+  margin-right: 0;
+}
+.nav-tabs.nav-stacked > li {
+  margin-top: 0;
+}
+.nav-tabs.nav-stacked > li > a {
+  -webkit-border-radius: 0;
+  border-radius: 0;
+  border: 1px solid #dddddd;
+}
+.nav-tabs.nav-stacked > li:first-child > a {
+  -webkit-border-top-left-radius: 4px;
+  border-top-left-radius: 4px;
+  -webkit-border-top-right-radius: 4px;
+  border-top-right-radius: 4px;
+}
+.nav-tabs.nav-stacked > li:last-child > a {
+  -webkit-border-bottom-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  -webkit-border-bottom-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+input:focus,
+input.form-control:focus {
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+select.form-control {
+  padding: 0 !important;
+}
+input[type=checkbox] {
+  padding: 8px;
+  min-height: 8px;
+}
+.form-inline .checkbox {
+  padding: 8px;
+  min-height: 8px;
+}
+*.bootstrap + .popover {
+  margin: 0;
+}
+*.bootstrap + .popover.right {
+  margin-left: 10px;
+}
+*.bootstrap + .popover.right .arrow:after {
+  border-right-color: #444444;
+}
+*.bootstrap + .popover.left {
+  margin-right: 10px;
+}
+*.bootstrap + .popover.left .arrow:after {
+  border-left-color: #444444;
+}
+*.bootstrap + .popover.top {
+  margin-bottom: 10px;
+}
+*.bootstrap + .popover.top .arrow:after {
+  border-top-color: #444444;
+}
+*.bootstrap + .popover.bottom {
+  margin-top: 10px;
+}
+*.bootstrap + .popover.bottom .arrow:after {
+  border-bottom-color: #444444;
+}
+*:not(.bootstrap) + .popover .arrow {
+  border: none;
+}
+*:not(.bootstrap) + .popover .arrow:after {
+  border: none;
+}
+*:not(.bootstrap) + .popover.bottom .arrow {
+  margin-left: inherit;
+}
+.tabs-below > .nav-tabs,
+.tabs-right > .nav-tabs,
+.tabs-left > .nav-tabs {
+  border-bottom: 0;
+}
+.tab-content > .tab-pane,
+.pill-content > .pill-pane {
+  display: none;
+}
+.tab-content > .active,
+.pill-content > .active {
+  display: block;
+}
+.tabs-below > .nav-tabs {
+  border-top: 1px solid #dddddd;
+}
+.tabs-below > .nav-tabs > li {
+  margin-top: -1px;
+  margin-bottom: 0;
+}
+.tabs-below > .nav-tabs > li > a {
+  -webkit-border-radius: 0 0 4px 4px;
+  -moz-border-radius: 0 0 4px 4px;
+  border-radius: 0 0 4px 4px;
+}
+.tabs-below > .nav-tabs > li > a:hover,
+.tabs-below > .nav-tabs > li > a:focus {
+  border-top-color: #ddd;
+  border-bottom-color: transparent;
+}
+.tabs-below > .nav-tabs > .active > a,
+.tabs-below > .nav-tabs > .active > a:hover,
+.tabs-below > .nav-tabs > .active > a:focus {
+  border-color: transparent #dddddd #dddddd #dddddd;
+}
+.tabs-left > .nav-tabs > li,
+.tabs-right > .nav-tabs > li {
+  float: none;
+}
+.tabs-left > .nav-tabs > li > a,
+.tabs-right > .nav-tabs > li > a {
+  min-width: 74px;
+  margin-right: 0;
+  margin-bottom: 3px;
+}
+.tabs-left > .nav-tabs {
+  float: left;
+  margin-right: 19px;
+  border-right: 1px solid #dddddd;
+}
+.tabs-left > .nav-tabs > li > a {
+  margin-right: -1px;
+  -webkit-border-radius: 4px 0 0 4px;
+  -moz-border-radius: 4px 0 0 4px;
+  border-radius: 4px 0 0 4px;
+}
+.tabs-left > .nav-tabs > li > a:hover,
+.tabs-left > .nav-tabs > li > a:focus {
+  border-color: #eeeeee #dddddd #eeeeee #eeeeee;
+}
+.tabs-left > .nav-tabs .active > a,
+.tabs-left > .nav-tabs .active > a:hover,
+.tabs-left > .nav-tabs .active > a:focus {
+  border-color: #ddd transparent #ddd #ddd;
+  *border-right-color: #ffffff;
+}
+.tabs-right > .nav-tabs {
+  float: right;
+  margin-left: 19px;
+  border-left: 1px solid #dddddd;
+}
+.tabs-right > .nav-tabs > li > a {
+  margin-left: -1px;
+  -webkit-border-radius: 0 4px 4px 0;
+  -moz-border-radius: 0 4px 4px 0;
+  border-radius: 0 4px 4px 0;
+}
+.tabs-right > .nav-tabs > li > a:hover,
+.tabs-right > .nav-tabs > li > a:focus {
+  border-color: #eeeeee #eeeeee #eeeeee #dddddd;
+}
+.tabs-right > .nav-tabs .active > a,
+.tabs-right > .nav-tabs .active > a:hover,
+.tabs-right > .nav-tabs .active > a:focus {
+  border-color: #ddd #ddd #ddd transparent;
+  *border-left-color: #ffffff;
+}
+
+    </style>
+    <style type="text/css">
         .app,
 body > .x-container {
   display: none;
 }
+body {
+  overflow: auto !important;
+}
 ul.rui-tree {
   padding-left: 0;
+}
+ul.rui-tree:not(.rui-tree-node-subtree) {
+  margin-left: 0;
 }
 h3 {
   margin-top: 0;
 }
+.project-picker > div {
+  margin-left: 10px;
+}
 .project-picker,
 .project-information {
   overflow: auto;
+  padding: 0;
 }
 
     </style>
 </head>
 <body ng-app="insights.app.real.teams">
-    <div ng-controller="RootCtrl"><div ng-if="!state.projectPromise.$finished" class="loading">Loading child projects</div><div ng-if="state.projectPromise.$finished" class="container-fluid"><div class="row"><div class="col-xs-3 project-picker"><input ng-model="state.searchTerm" placeholder="Filter by name"/><ul rui-tree="state.nodes track by ObjectID" rui-tree-expandable="" rui-tree-selectable="deselect" rui-tree-selected-node="state.selectedNode" rui-tree-search="state.searchTerm search by Name" class="rui-tree-outline"></ul></div><div class="col-xs-9 project-information"><div ng-if="state.selectedNode"><h3 ng-bind="state.selectedNode.Name"></h3><div ng-if="!state.selectedNode.$metricsPromise.$finished">Loading project	metrics			</div><ul ng-if="state.selectedNode.$metricsPromise.$finished" class="metric-readout"><li ng-repeat="(metricName, metricValue) in state.selectedNode.metrics"><span ng-bind="metricName"></span><span>&nbsp;:&nbsp;</span><span ng-bind="metricValue.value"></span></li></ul></div><div ng-if="!state.selectedNode">Choose a project to get metric information</div></div></div></div></div>
+    <div ng-controller="RootCtrl"><div ng-if="!state.projectPromise.$finished" class="loading">Loading child projects</div><div ng-if="state.projectPromise.$finished" class="container-fluid"><div class="row"><div class="col-xs-3 project-picker"><div><div class="search"><input type="text" ng-model="state.searchTerm" placeholder="Filter by name"/></div><ul rui-tree="state.nodes track by ObjectID" rui-tree-expandable="startExpanded" rui-tree-selectable="deselect" rui-tree-selected-node="state.selectedNode" rui-tree-search="state.searchTerm search by Name" class="rui-tree-outline"></ul></div></div><div class="col-xs-9 project-information"><div ng-if="state.selectedNode"><h3 ng-bind="state.selectedNode.Name"></h3><div ng-if="!state.selectedNode.$metricsPromise.$finished">Loading project	metrics			</div><ul ng-if="state.selectedNode.$metricsPromise.$finished" class="metric-readout"><li ng-repeat="(metricName, metricValue) in state.selectedNode.metrics"><span ng-bind="metricName"></span><span>&nbsp;:&nbsp;</span><span ng-bind="metricValue.value"></span></li></ul></div><div ng-if="!state.selectedNode">Choose a project to get metric information</div></div></div></div></div>
 </body>
 </html>

@@ -1,11 +1,27 @@
 .app, body >.x-container 
     display: none
 
+body
+	overflow: auto !important
+
 ul.rui-tree
 	padding-left: 0px
 
+	&:not(.rui-tree-node-subtree)
+		margin-left: 0px
+
 h3
 	margin-top: 0px
-
+.project-picker
+	>div
+		margin-left: 10px
 .project-picker, .project-information
 	overflow: auto
+	padding: 0px
+
+// .search
+// 	position: relative
+
+// 	.search-indicators
+// 		position: absolute
+// 		right: 5px

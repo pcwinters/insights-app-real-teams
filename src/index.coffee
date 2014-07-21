@@ -70,7 +70,7 @@ angular.module('insights.app.real.teams', [
 				dataPoint = _.find(scope?.dataPoints, timePeriod)
 				return dataPoint
 			.then (dataPoint)->
-				projectScope.metrics = dataPoint.data
+				projectScope.metrics = dataPoint?.data
 			.finally ()->
 				projectScope.$metricsPromise.$finished = true
 			projectScope.$metricsPromise.$finished = false

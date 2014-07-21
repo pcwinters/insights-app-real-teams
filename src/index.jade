@@ -4,13 +4,18 @@ div(ng-controller="RootCtrl")
 	.container-fluid(ng-if="state.projectPromise.$finished")
 		.row
 			.col-xs-3.project-picker
-				input(ng-model="state.searchTerm", placeholder="Filter by name")
-				ul.rui-tree-outline(
-					rui-tree="state.nodes track by ObjectID", 
-					rui-tree-expandable="", 
-					rui-tree-selectable="deselect",
-					rui-tree-selected-node="state.selectedNode"
-					rui-tree-search="state.searchTerm search by Name")
+				div
+					div.search
+						input(type="text", ng-model="state.searchTerm", placeholder="Filter by name")
+						//- span.search-indicators
+						//- 	span.search-in-progress.icon-progress.icon-spin(ng-if="$ruiAlmProjectPicker.searchInProgress")
+						//- 	a.clear-search.icon-cancel(ng-if="$ruiAlmProjectPicker.isSearching", ng-click="state.searchTerm=''")
+					ul.rui-tree-outline(
+						rui-tree="state.nodes track by ObjectID", 
+						rui-tree-expandable="startExpanded",
+						rui-tree-selectable="deselect",
+						rui-tree-selected-node="state.selectedNode"
+						rui-tree-search="state.searchTerm search by Name")
 			.col-xs-9.project-information
 				div(ng-if="state.selectedNode")
 					h3(ng-bind='state.selectedNode.Name')

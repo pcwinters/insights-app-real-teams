@@ -26,6 +26,8 @@
    "css": [
       "bower_components/bootstrap/dist/css/bootstrap.min.css",
       "bower_components/rui-angular/assets/css/styles.css",
+      "bower_components/rally-style/dist/rally.css",
+      "bower_components/rally-style/dist/bootstrap3-overrides.css",
       "build/index.css"
    ],
    "scripts": {
