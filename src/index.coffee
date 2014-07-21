@@ -8,7 +8,7 @@ angular.module('insights.app.real.teams', [
 ])
 .config ($slmProvider, $sdpiProvider)->
 	$slmProvider.setBaseUrl( '//rally1.rallydev.com/slm/')
-	$sdpiProvider.setBaseUrl('https://test13cluster.rallydev.com/insight/')
+	$sdpiProvider.setBaseUrl('//rally1.rallydev.com/insight/')
 
 .run ($rally, $rootScope)->
 	$rootScope.app ?= {};
