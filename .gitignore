@@ -10,3 +10,5 @@ App-local.html
 node_modules
 build
 bower_components
+deploy/App-external.html
+deploy/App.html
