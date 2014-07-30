@@ -21,7 +21,7 @@
       "//code.jquery.com/jquery-2.1.1.min.js",
       "//ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular.js",
       "//ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular-sanitize.js",
-      "https://rally1.rallydev.com/insight/static/sdpi/app.js"
+      "https://test13cluster.rallydev.com/insight/static/sdpi/app.js"
    ],
    "css": [
       "bower_components/bootstrap/dist/css/bootstrap.min.css",
