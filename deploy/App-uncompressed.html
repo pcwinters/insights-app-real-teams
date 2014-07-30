@@ -1775,10 +1775,8 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
     RuiAlmProjectPickerCtrl.prototype.selectNode = function (node) {
       return this.$scope.$ruiAlmProjectPicker.selectedNode = node;
     };
-    RuiAlmProjectPickerCtrl.prototype.onSelectedNode = function (event, selectedNode, userEvent) {
-      if (userEvent != null) {
-        this.$scope.$ruiAlmProjectPicker.dropdownIsOpen = false;
-      }
+    RuiAlmProjectPickerCtrl.prototype.onSelectedNode = function (event, selectedNode) {
+      this.$scope.$ruiAlmProjectPicker.dropdownIsOpen = false;
       return event.stopPropagation();
     };
     RuiAlmProjectPickerCtrl.prototype.onSearchInProgress = function (event, searchInProgress) {
@@ -3967,14 +3965,10 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
             options.useHTML = true;
             ngTemplateUrl = options.ngTemplateUrl;
             options.formatter = function (tooltip) {
-              var $scope, _ref;
-              $scope = (_ref = angular.element(tooltip.label.div)) != null ? _ref.scope() : void 0;
-              if ($scope != null) {
-                $scope.$chart = chart;
-              }
-              if ($scope != null) {
-                $scope.$tooltip = this;
-              }
+              var $scope;
+              $scope = angular.element(tooltip.label.div).scope();
+              $scope.$chart = chart;
+              $scope.$tooltip = this;
               return '<div ng-include="\'' + ngTemplateUrl + '\'">';
             };
           }
@@ -3992,41 +3986,37 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
     function ($provide) {
       return $provide.decorator('Highcharts', function ($delegate, $compile) {
         $delegate.Chart.prototype.getContainer = _.wrap($delegate.Chart.prototype.getContainer, function () {
-          var $scope, args, getContainerFn, result, _ref;
+          var $scope, args, getContainerFn, result;
           getContainerFn = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
           result = getContainerFn.apply(this, args);
-          $scope = (_ref = angular.element(this.renderTo).scope()) != null ? _ref.$new() : void 0;
-          if ($scope != null) {
-            this.$scope = $scope;
-            $scope.$chart = this;
-            $compile(this.container)(this.$scope);
-          }
+          $scope = angular.element(this.renderTo).scope().$new();
+          this.$scope = $scope;
+          $scope.$chart = this;
+          $compile(this.container)(this.$scope);
           return result;
         });
         $delegate.Renderer.prototype.html = _.wrap($delegate.Renderer.prototype.html, function () {
-          var $innerScope, $scope, args, htmlFn, htmlWrapper, _ref, _ref1, _ref2;
+          var $innerScope, $scope, args, htmlFn, htmlWrapper, _ref, _ref1;
           htmlFn = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
           htmlWrapper = htmlFn.apply(this, args);
-          $scope = (_ref = angular.element(this.box).scope()) != null ? _ref.$new() : void 0;
-          if ($scope != null) {
-            $compile(htmlWrapper.element)($scope);
-            $(htmlWrapper.element).on('remove', function () {
-              return $scope.$destroy();
+          $scope = angular.element(this.box).scope().$new();
+          $compile(htmlWrapper.element)($scope);
+          $(htmlWrapper.element).on('remove', function () {
+            return $scope.$destroy();
+          });
+          $innerScope = null;
+          if ((_ref = htmlWrapper.attrSetters) != null) {
+            _ref.text = _.wrap((_ref1 = htmlWrapper.attrSetters) != null ? _ref1.text : void 0, function () {
+              var args, result, textFn;
+              textFn = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+              result = textFn.apply(this, args);
+              $innerScope = $scope.$new();
+              $compile($(this.element).contents())($innerScope);
+              if (!$innerScope.$$phase) {
+                $innerScope.$digest();
+              }
+              return result;
             });
-            $innerScope = null;
-            if ((_ref1 = htmlWrapper.attrSetters) != null) {
-              _ref1.text = _.wrap((_ref2 = htmlWrapper.attrSetters) != null ? _ref2.text : void 0, function () {
-                var args, result, textFn;
-                textFn = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-                result = textFn.apply(this, args);
-                $innerScope = $scope.$new();
-                $compile($(this.element).contents())($innerScope);
-                if (!$innerScope.$$phase) {
-                  $innerScope.$digest();
-                }
-                return result;
-              });
-            }
           }
           return htmlWrapper;
         });
@@ -4415,49 +4405,37 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
   ]);
 }.call(this));
 (function () {
-  var TabCtrl, __bind = function (fn, me) {
+  var TabsetCtrl, __bind = function (fn, me) {
       return function () {
         return fn.apply(me, arguments);
       };
     };
-  angular.module('rui.tabs.directives.controllers.tab', []).controller('TabCtrl', TabCtrl = function () {
-    function TabCtrl($scope) {
+  angular.module('rui.tabs.directives.controllers.tab', []).controller('TabCtrl', TabsetCtrl = function () {
+    TabsetCtrl.$inject = ['$scope'];
+    function TabsetCtrl($scope) {
+      var _this = this;
       this.$scope = $scope;
-      this.watchActiveTab = __bind(this.watchActiveTab, this);
       this.headingClasses = __bind(this.headingClasses, this);
       this.select = __bind(this.select, this);
       this.$tab = this.$scope.$tab = this.$scope.$new();
-      this.$tab.state = {};
       this.$tab.model = {};
       this.$tab.select = this.select;
       this.$tab.headingClasses = this.headingClasses;
       this.$tab.contentClasses = this.headingClasses;
       this.$tabset = this.$scope.$tabset;
-      this.$tabset.registerTab(this.$tab);
-      this.$tabset.$watch('$tabset.state.activeTab', this.watchActiveTab);
+      this.$tabset.registerTab(this.$tab.model);
+      this.$tabset.$watch('state.activeTab', function (tab) {
+        return _this.$tab.model.isActive = tab === _this.$tab.model;
+      });
       return this;
     }
-    TabCtrl.prototype.select = function ($event) {
-      var isActive;
-      isActive = this.$tab.state.isActive;
-      if (isActive && !this.$tabset.config.allowDeselect) {
-        return;
-      }
-      return this.$tab.selectTab(isActive ? null : this.$tab);
+    TabsetCtrl.prototype.select = function () {
+      return this.$tab.model.isActive = this.$tab.selectTab(this.$tab.model);
     };
-    TabCtrl.prototype.headingClasses = function () {
-      return {
-        active: this.$tab.state.isActive,
-        selected: this.$tab.state.isSelected
-      };
+    TabsetCtrl.prototype.headingClasses = function () {
+      return { active: this.$tab.model.isActive };
     };
-    TabCtrl.prototype.watchActiveTab = function (tab, oldTab) {
-      this.$tab.state.isActive = tab === this.$tab;
-      if (tab != null) {
-        return this.$tab.state.isSelected = this.$tab.state.isActive;
-      }
-    };
-    return TabCtrl;
+    return TabsetCtrl;
   }());
 }.call(this));
 (function () {
@@ -4467,34 +4445,28 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
       };
     };
   angular.module('rui.tabs.directives.controllers.tabset', []).controller('TabsetCtrl', TabsetCtrl = function () {
-    function TabsetCtrl($scope) {
+    TabsetCtrl.$inject = [
+      '$scope',
+      '$transclude'
+    ];
+    function TabsetCtrl($scope, $transclude) {
       this.$scope = $scope;
+      this.$transclude = $transclude;
       this.registerTab = __bind(this.registerTab, this);
-      this.selectModel = __bind(this.selectModel, this);
       this.select = __bind(this.select, this);
       this.$tabset = this.$scope.$tabset = this.$scope.$new();
-      this.$tabset.config = {
-        allowDeselect: false,
-        startActive: true
-      };
       this.$tabset.state = {};
       this.$tabset.registerTab = this.registerTab;
-      this.$tabset.tabs = [];
       return this;
     }
     TabsetCtrl.prototype.select = function (tab) {
       this.$tabset.state.activeTab = tab;
-      return tab != null;
-    };
-    TabsetCtrl.prototype.selectModel = function (model) {
-      return this.select(_.find(this.$tabset.tabs, { model: model }));
+      return true;
     };
     TabsetCtrl.prototype.registerTab = function (tab) {
-      if (!this.$tabset.state.activeTab && this.$tabset.config.startActive) {
-        this.select(tab);
+      if (!this.$tabset.state.activeTab) {
+        return this.select(tab);
       }
-      tab.state.isSelected = this.$tabset.tabs.length === 0;
-      return this.$tabset.tabs.push(tab);
     };
     return TabsetCtrl;
   }());
@@ -4503,21 +4475,19 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
 */
 (function () {
   var tab;
-  tab = angular.module('rui.tabs.directives.tab', ['rui.tabs.directives.controllers.tab']).directive('ruiTab', [
-    '$parse',
-    function ($parse) {
+  tab = angular.module('rui.tabs.directives.tab', ['rui.tabs.directives.controllers.tab']).directive('ruiTab', [function () {
       return {
         restrict: 'EA',
-        require: ['^ruiTabset'],
+        require: [
+          '?ngModel',
+          '^ruiTabset'
+        ],
         controller: 'TabCtrl',
         scope: true,
         link: {
           post: function (scope, element, attrs, _arg) {
-            var $content, $element, $heading, $tabset, model, tabsetController;
-            tabsetController = _arg[0];
-            if (model = $parse(attrs.ruiTab)(scope)) {
-              scope.$tab.model = model;
-            }
+            var $content, $element, $heading, $tabset, ngModel, tabsetController;
+            ngModel = _arg[0], tabsetController = _arg[1];
             $element = $(element);
             $heading = $element.children('.rui-tab-heading, [rui-tab-heading]');
             $content = $element.children('.rui-tab-content, [rui-tab-content]');
@@ -4529,8 +4499,7 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
           }
         }
       };
-    }
-  ]);
+    }]);
 }.call(this));
 /*
 */
@@ -4610,7 +4579,7 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
               </div>
               <div rui-tabset ng-model="selectedTab">
                 <!-- directive: rui-transclude-class rui-tab -->
-                <div ng-repeat="tab in tabs" rui-tab>
+                <div ng-repeat="tab in tabs" rui-tab ng-model="tab">
                   <div rui-tab-heading>{{tab.name}}</div>
                   <div rui-tab-content ng-class="{active: tab.active}">{{tab.name}} - content</div>
               	</div>
@@ -4621,18 +4590,10 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
 */
 (function () {
   var tabset;
-  tabset = angular.module('rui.tabs.directives.tabset', [
-    'rui.tabs.directives.controllers.tabset',
-    'rui.util.lodash'
-  ]).directive('ruiTabset', [
-    '$parse',
-    function ($parse) {
+  tabset = angular.module('rui.tabs.directives.tabset', ['rui.tabs.directives.controllers.tabset']).directive('ruiTabset', [function () {
       return {
         restrict: 'EA',
-        require: [
-          '?ngModel',
-          'ruiTabset'
-        ],
+        require: ['?ngModel'],
         transclude: true,
         scope: true,
         replace: true,
@@ -4640,25 +4601,13 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
         controller: 'TabsetCtrl',
         link: {
           post: function (scope, element, attrs, _arg) {
-            var ngModel, ruiTabsetCtrl;
-            ngModel = _arg[0], ruiTabsetCtrl = _arg[1];
-            _.extend(scope.$tabset.config, $parse(attrs.ruiTabset)(scope));
-            if (ngModel) {
-              scope.$watch('$tabset.state.activeTab', function (tab) {
-                return ngModel.$setViewValue(tab != null ? tab.model : void 0);
-              });
-              scope.$watch(function () {
-                return ngModel.$modelValue;
-              }, function (tab) {
-                return ruiTabsetCtrl.selectModel(tab);
-              });
-            }
+            var ngModel;
+            ngModel = _arg[0];
             return this;
           }
         }
       };
-    }
-  ]);
+    }]);
 }.call(this));
 (function () {
   var module;
@@ -4788,6 +4737,7 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
     function RuiTreeExpandCollapseCtrl($scope, $timeout) {
       this.$scope = $scope;
       this.$timeout = $timeout;
+      this.startExpanded = __bind(this.startExpanded, this);
       this.getParent = __bind(this.getParent, this);
       this.getNodeState = __bind(this.getNodeState, this);
       this.expandTo = __bind(this.expandTo, this);
@@ -4836,6 +4786,11 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
     RuiTreeExpandCollapseCtrl.prototype.getParent = function (node) {
       return this.$scope.$ruiTree.getParent(node);
     };
+    RuiTreeExpandCollapseCtrl.prototype.startExpanded = function (startExpanded) {
+      if (this.$scope.$ruiTree.isRootTree) {
+        return this.$scope.$ruiTree.rootState.startExpanded = startExpanded;
+      }
+    };
     return RuiTreeExpandCollapseCtrl;
   }()).controller('RuiTreeNodeExpandCollapseCtrl', RuiTreeNodeExpandCollapseCtrl = function () {
     function RuiTreeNodeExpandCollapseCtrl($scope) {
@@ -4844,12 +4799,24 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
       this.watchChildrenAndExpand = __bind(this.watchChildrenAndExpand, this);
       this.toggleExpand = __bind(this.toggleExpand, this);
       this.getState = __bind(this.getState, this);
+      this.watchStateForFirstLoad = __bind(this.watchStateForFirstLoad, this);
       _.assign(this.$scope.$ruiTreeNode, { toggleExpand: this.toggleExpand });
       this.$scope.$watch('$ruiTreeNode.hasChildren', this.watchChildrenAndExpand);
       this.$scope.$watch('$ruiTreeNode.toggleDisabled', this.watchChildrenAndExpand);
       this.$scope.$watch('$ruiTreeNode.state.expand', this.watchChildrenAndExpand);
       this.$scope.$watch('$ruiTreeNode.hasChildrenAndExpanded', this.watchToShowSubTree);
+      this.$scope.$watch('$ruiTreeNode.state', this.watchStateForFirstLoad);
     }
+    RuiTreeNodeExpandCollapseCtrl.prototype.watchStateForFirstLoad = function (state) {
+      if (state == null) {
+        return;
+      }
+      if (state.expand == null) {
+        if (this.$scope.$ruiTree.rootState.startExpanded) {
+          return state.expand = true;
+        }
+      }
+    };
     RuiTreeNodeExpandCollapseCtrl.prototype.getState = function () {
       return this.$scope.$ruiTreeNode.state;
     };
@@ -5103,14 +5070,13 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
       };
     }, __slice = [].slice;
   angular.module('rui.tree.controllers.selection', ['rui.util.lodash']).controller('RuiTreeSelectionCtrl', RuiTreeSelectionCtrl = function () {
-    function RuiTreeSelectionCtrl($scope, $parse, $timeout) {
+    function RuiTreeSelectionCtrl($scope, $parse) {
       var _base, _this = this;
       this.$scope = $scope;
       this.$parse = $parse;
-      this.$timeout = $timeout;
+      this.watchSelectedNodes = __bind(this.watchSelectedNodes, this);
       this.bubbleSelectPath = __bind(this.bubbleSelectPath, this);
       this.getParent = __bind(this.getParent, this);
-      this._selectNodes = __bind(this._selectNodes, this);
       this.toggleNodeSelection = __bind(this.toggleNodeSelection, this);
       this.getIndexedNode = __bind(this.getIndexedNode, this);
       this.selectNode = __bind(this.selectNode, this);
@@ -5131,17 +5097,12 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
         selectNode: this.selectNode
       });
       if (this.$scope.$ruiTree.isRootTree) {
+        this.$scope.$watchCollection('$ruiTree.rootState.selection.nodes', this.watchSelectedNodes);
         this.$scope.$watch('$ruiTree.rootState.selection.node', function (node) {
-          _this.$scope.$emit('rui-tree:selectedNode', node, _this.$scope.$ruiTree.rootState.selection.userEvent);
-          return _this.$timeout(function () {
-            return _this.$scope.$ruiTree.rootState.selection.userEvent = null;
-          });
+          return _this.$scope.$emit('rui-tree:selectedNode', node);
         });
         this.$scope.$watchCollection('$ruiTree.rootState.selection.nodes', function (nodes) {
-          _this.$scope.$emit('rui-tree:selectedNodes', nodes, _this.$scope.$ruiTree.rootState.selection.userEvent);
-          return _this.$timeout(function () {
-            return _this.$scope.$ruiTree.rootState.selection.userEvent = null;
-          });
+          return _this.$scope.$emit('rui-tree:selectedNodes', nodes);
         });
         this.$scope.$on('rui-tree:index', this.updateNodesFromIndex);
       }
@@ -5223,11 +5184,8 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
     RuiTreeSelectionCtrl.prototype.getIndexedNode = function (node) {
       return this.$scope.$ruiTree.getIndexedNode(node);
     };
-    RuiTreeSelectionCtrl.prototype.toggleNodeSelection = function (node, userEvent) {
+    RuiTreeSelectionCtrl.prototype.toggleNodeSelection = function (node) {
       var selection, state, _this = this;
-      if (userEvent == null) {
-        userEvent = null;
-      }
       selection = this.$scope.$ruiTree.rootState.selection;
       state = this.getNodeState(node);
       if (state.selected && !selection.allowDeselect) {
@@ -5237,9 +5195,9 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
       node = this.getIndexedNode(node) || node;
       if (selection.allowMultiSelect) {
         if (state.selected) {
-          this._selectNodes(selection.nodes.concat([node]), userEvent);
+          selection.nodes = selection.nodes.concat([node]);
         } else {
-          this._selectNodes(_.without(selection.nodes, node), userEvent);
+          selection.nodes = _.without(selection.nodes, node);
         }
         return this.bubbleSelectPath(node, state.selected);
       } else {
@@ -5248,19 +5206,12 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
           return _this.bubbleSelectPath(currentlySelectedNode, false);
         });
         if (state.selected) {
-          this.bubbleSelectPath(node, true);
-          return this._selectNodes([node], userEvent);
+          selection.nodes = [node];
+          return this.bubbleSelectPath(node, true);
         } else {
-          return this._selectNodes([], userEvent);
+          return selection.nodes = [];
         }
       }
-    };
-    RuiTreeSelectionCtrl.prototype._selectNodes = function (nodes, userEvent) {
-      var selection;
-      selection = this.$scope.$ruiTree.rootState.selection;
-      selection.nodes = nodes;
-      selection.node = _.first(nodes);
-      return selection.userEvent = userEvent;
     };
     RuiTreeSelectionCtrl.prototype.getParent = function (node) {
       return this.$scope.$ruiTree.getParent(node);
@@ -5282,6 +5233,9 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
         return this.bubbleSelectPath(parent, inSelectPath);
       }
     };
+    RuiTreeSelectionCtrl.prototype.watchSelectedNodes = function (nodes) {
+      return this.$scope.$ruiTree.rootState.selection.node = _.first(nodes);
+    };
     return RuiTreeSelectionCtrl;
   }()).controller('RuiTreeNodeSelectionCtrl', RuiTreeNodeSelectionCtrl = function () {
     function RuiTreeNodeSelectionCtrl($scope) {
@@ -5290,11 +5244,8 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
       this.toggleSelection = __bind(this.toggleSelection, this);
       _.extend(this.$scope.$ruiTreeNode, { toggleSelection: this.toggleSelection });
     }
-    RuiTreeNodeSelectionCtrl.prototype.toggleSelection = function (userEvent) {
-      if (userEvent == null) {
-        userEvent = null;
-      }
-      return this.$scope.$ruiTree.toggleNodeSelection(this.$scope.$ruiTreeNode.node, userEvent);
+    RuiTreeNodeSelectionCtrl.prototype.toggleSelection = function () {
+      return this.$scope.$ruiTree.toggleNodeSelection(this.$scope.$ruiTreeNode.node);
     };
     RuiTreeNodeSelectionCtrl.prototype.getState = function () {
       return this.$scope.$ruiTreeNode.state;
@@ -5339,13 +5290,23 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
 (function () {
   angular.module('rui.tree.directives.expandCollapse', ['rui.tree.controllers.expandCollapse']).directive('ruiTreeExpandable', function () {
     return {
-      require: ['ruiTreeCtrl'],
+      require: [
+        'ruiTreeExpandable',
+        'ruiTreeCtrl'
+      ],
       controller: 'RuiTreeExpandCollapseCtrl',
       compile: function ($element) {
         $element.addClass('rui-tree-outline');
         $element.addClass('rui-tree-expandable');
         $element.find('.rui-tree-nodes').attr('rui-tree-node-expandable', '');
-        return function () {
+        return {
+          pre: function ($scope, $element, $attrs, _arg) {
+            var attribute, controller, startExpanded;
+            controller = _arg[0];
+            attribute = $attrs['ruiTreeExpandable'];
+            startExpanded = _.contains(attribute, 'startExpanded');
+            return controller.startExpanded(startExpanded);
+          }
         };
       }
     };
@@ -5568,7 +5529,7 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
       require: ['ruiTreeNodeCtrl'],
       controller: 'RuiTreeNodeSelectionCtrl',
       compile: function ($element) {
-        $element.find('.rui-tree-node-content').attr('ng-click', '$ruiTreeNode.toggleSelection($event)');
+        $element.find('.rui-tree-node-content').attr('ng-click', '$ruiTreeNode.toggleSelection()');
         $element.find('.rui-tree-node-content').attr('ng-class', '{selected: $ruiTreeNode.state.selected}');
         return {
           pre: function ($scope, $element, $attrs, _arg) {
@@ -5796,74 +5757,7 @@ util = angular.module('rally.util', ['rally.util.async', 'rally.util.cache', 'ra
   });
 }.call(this));
 (function () {
-  angular.module('rui.util.bootstrap.collapseWidth', ['ui.bootstrap']).directive('collapseWidth', [
-    '$transition',
-    function ($transition, $timeout) {
-      return {
-        link: function (scope, element, attrs) {
-          var collapse, collapseDone, currentTransition, doTransition, expand, expandDone, initialAnimSkip;
-          initialAnimSkip = true;
-          currentTransition = void 0;
-          doTransition = function (change) {
-            var newTransition, newTransitionDone;
-            newTransitionDone = function () {
-              if (currentTransition === newTransition) {
-                currentTransition = undefined;
-              }
-            };
-            newTransition = $transition(element, change);
-            if (currentTransition) {
-              currentTransition.cancel();
-            }
-            currentTransition = newTransition;
-            newTransition.then(newTransitionDone, newTransitionDone);
-            return newTransition;
-          };
-          expand = function () {
-            if (initialAnimSkip) {
-              initialAnimSkip = false;
-              expandDone();
-            } else {
-              element.removeClass('collapse').addClass('collapsing-width');
-              doTransition({ width: element[0].scrollWidth + 'px' }).then(expandDone);
-            }
-          };
-          expandDone = function () {
-            element.removeClass('collapsing-width');
-            element.addClass('collapse in');
-            element.css({ width: 'auto' });
-          };
-          collapse = function () {
-            var x;
-            if (initialAnimSkip) {
-              initialAnimSkip = false;
-              collapseDone();
-              element.css({ width: 0 });
-            } else {
-              element.css({ width: element[0].scrollWidth + 'px' });
-              x = element[0].offsetHeight;
-              element.removeClass('collapse in').addClass('collapsing-width');
-              doTransition({ width: 0 }).then(collapseDone);
-            }
-          };
-          collapseDone = function () {
-            element.removeClass('collapsing-width');
-            element.addClass('collapse');
-          };
-          scope.$watch(attrs.collapseWidth, function (shouldCollapse) {
-            if (shouldCollapse) {
-              collapse();
-            } else {
-              expand();
-            }
-          });
-        }
-      };
-    }
-  ]);
-}.call(this));
-(function () {
-  angular.module('rui.util.bootstrap', ['rui.util.bootstrap.collapseWidth']);
+  angular.module('rui.util.bootstrap', []);
 }.call(this));
 /**
  * @ngdoc service
@@ -6736,7 +6630,7 @@ angular.module('rui.templates').run(['$templateCache', function($templateCache) 
   'use strict';
 
   $templateCache.put('rui/alm/projectPicker/templates/projectPicker.html',
-    "<div rui-alm-project-picker-ctrl=rui-alm-project-picker-ctrl class=rui-alm-project-picker><div ng-class=\"{ dropdown: $ruiAlmProjectPicker.useDropdown, open: $ruiAlmProjectPicker.dropdownIsOpen }\" rui-focus-me=$ruiAlmProjectPicker.dropdownIsOpen tabindex=0 class=rui-alm-project-picker-dropdown><span ng-if=$ruiAlmProjectPicker.isLoading class=\"is-loading icon-spin icon-spinner\"></span><a ng-click=$ruiAlmProjectPicker.toggleDropdown($event) ng-show=$ruiAlmProjectPicker.useDropdown class=rui-alm-project-picker-dropdown-toggle><span ng-bind=$ruiAlmProjectPicker.triggerText></span><span class=\"trigger-icon icon-chevron-down\"></span></a><div ng-class=\"{ 'dropdown-menu': $ruiAlmProjectPicker.useDropdown }\" class=rui-alm-project-picker-dropdown-menu><div class=rui-alm-project-picker-search><input placeholder=Search ng-model=$ruiAlmProjectPicker.searchTerm ui-keypress=\"{'escape': $ruiAlmProjectPicker.clearSearch()}\" ui-event=\"{ blur : '$ruiAlmProjectPicker.onBlur($event)' }\"><span class=search-indicators><span ng-if=$ruiAlmProjectPicker.searchInProgress class=\"search-in-progress icon-spinner icon-spin\"></span><a ng-if=$ruiAlmProjectPicker.isSearching ng-click=$ruiAlmProjectPicker.clearSearch() class=\"clear-search icon-cancel\"></a></span></div><div class=tree-container><ul rui-tree=\"$ruiAlmProjectPicker.workspaces track by oid\" rui-tree-expandable=\"\" rui-tree-search=\"$ruiAlmProjectPicker.searchTerm search by name\" rui-tree-selectable=\"\" rui-tree-selected-node=$ruiAlmProjectPicker.selectedNode rui-alm-project-picker-tree=\"\" class=rui-tree></ul></div></div></div></div>"
+    "<div rui-alm-project-picker-ctrl=rui-alm-project-picker-ctrl class=rui-alm-project-picker><div ng-class=\"{ dropdown: $ruiAlmProjectPicker.useDropdown, open: $ruiAlmProjectPicker.dropdownIsOpen }\" rui-focus-me=$ruiAlmProjectPicker.dropdownIsOpen tabindex=0 class=rui-alm-project-picker-dropdown><span ng-if=$ruiAlmProjectPicker.isLoading class=\"is-loading icon-spin icon-progress\"></span><a ng-click=$ruiAlmProjectPicker.toggleDropdown($event) ng-show=$ruiAlmProjectPicker.useDropdown class=rui-alm-project-picker-dropdown-toggle><span ng-bind=$ruiAlmProjectPicker.triggerText></span><span class=\"trigger-icon icon-chevron-down\"></span></a><div ng-class=\"{ 'dropdown-menu': $ruiAlmProjectPicker.useDropdown }\" class=rui-alm-project-picker-dropdown-menu><div class=rui-alm-project-picker-search><input placeholder=Search ng-model=$ruiAlmProjectPicker.searchTerm ui-keypress=\"{'escape': $ruiAlmProjectPicker.clearSearch()}\" ui-event=\"{ blur : '$ruiAlmProjectPicker.onBlur($event)' }\"><span class=search-indicators><span ng-if=$ruiAlmProjectPicker.searchInProgress class=\"search-in-progress icon-progress icon-spin\"></span><a ng-if=$ruiAlmProjectPicker.isSearching ng-click=$ruiAlmProjectPicker.clearSearch() class=\"clear-search icon-cancel\"></a></span></div><div class=tree-container><ul rui-tree=\"$ruiAlmProjectPicker.workspaces track by oid\" rui-tree-expandable=\"\" rui-tree-search=\"$ruiAlmProjectPicker.searchTerm search by name\" rui-tree-selectable=\"\" rui-tree-selected-node=$ruiAlmProjectPicker.selectedNode rui-alm-project-picker-tree=\"\" class=rui-tree></ul></div></div></div></div>"
   );
 
 
@@ -6791,7 +6685,7 @@ angular.module('rui.templates').run(['$templateCache', function($templateCache) 
 
 
   $templateCache.put('rui/tabs/templates/tab-heading.html',
-    "<li ng-class=$tab.headingClasses() ng-click=$tab.select($event)><a rui-transclude=\"\" analytics-if=$tabset.config.$analytics.name analytics-on=\"click mouseover\" analytics-event=tab analytics-component=rui.tabset analytics-properties=$tabset.config.$analytics analytics-tabset={{$tabset.config.$analytics.name}} analytics-tab={{$tab.model}}></a></li>"
+    "<li ng-class=$tab.headingClasses()><a rui-transclude=\"\" ng-click=$tab.select()></a></li>"
   );
 
 
@@ -13284,20 +13178,14 @@ button.close {
 }
 .rui-tree {
   list-style: none;
+  margin-left: 25px;
+  padding: 0;
 }
 .rui-tree li.rui-tree-node {
   white-space: nowrap;
 }
 .rui-tree li.rui-tree-node .rui-tree-node-container > * {
   display: inline-block;
-}
-.collapsing-width {
-  position: relative;
-  overflow: hidden;
-  -webkit-transition: width .35s ease;
-  -moz-transition: width .35s ease;
-  -o-transition: width .35s ease;
-  transition: width 0.35s ease;
 }
 
     </style>
