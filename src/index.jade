@@ -8,7 +8,7 @@ html
 		link(rel='stylesheet', href=cdn('bower_components/rally-style/dist/icons.css'))
 		link(rel='stylesheet', href=cdn('bower_components/rui-angular/assets/css/styles.css'))
 		style
-			include ../build/index.css
+			include ../dist/index.css
 	body
 		div(ng-controller="RootCtrl")
 			.loading(ng-if="!state.projectPromise.$finished") Loading child projects
@@ -57,4 +57,4 @@ html
 		script(src=cdn("bower_components/validate/validate.min.js"))
 		script(src=cdn("bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"))
 		script
-			include ../build/index.js
+			include ../dist/index.js
