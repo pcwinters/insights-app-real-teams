@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Insights SDPI Real Teams</title>
+    <link rel="stylesheet" href="//bowercdn.f4tech.com/bower/bootstrap/3.1.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//bowercdn.f4tech.com/bower/rally-style/0.2.15/dist/rally.css">
+    <link rel="stylesheet" href="//bowercdn.f4tech.com/bower/rally-style/0.2.15/dist/bootstrap3-overrides.css">
+    <link rel="stylesheet" href="//bowercdn.f4tech.com/bower/rally-style/0.2.15/dist/icons.css">
+    <link rel="stylesheet" href="//bowercdn.f4tech.com/bower/rui-angular/0.2.4/assets/css/styles.css">
+    <style>.app,body >.x-container{display:none}body{overflow:auto !important}ul.rui-tree{padding-left:0;}ul.rui-tree:not(.rui-tree-node-subtree){margin-left:0}h3{margin-top:0}.project-picker >div{margin-left:10px}.project-picker,.project-information{overflow:auto;padding:0}
+    </style>
+  </head>
+  <body ng-app="insights.app.real.teams">
+    <div ng-controller="RootCtrl">
+      <div ng-if="!state.projectPromise.$finished" class="loading">Loading child projects</div>
+      <div ng-if="state.projectPromise.$finished" class="container-fluid">
+        <div class="row">
+          <div class="col-xs-3 project-picker">
+            <div>
+              <div class="search">
+                <input type="text" ng-model="state.searchTerm" placeholder="Filter by name">
+              </div>
+              <ul rui-tree="state.nodes track by ObjectID" rui-tree-expandable="startExpanded" rui-tree-selectable="deselect" rui-tree-selected-node="state.selectedNode" rui-tree-search="state.searchTerm search by Name" class="rui-tree-outline"></ul>
+            </div>
+          </div>
+          <div class="col-xs-9 project-information">
+            <div ng-if="state.selectedNode">
+              <h3 ng-bind="state.selectedNode.Name"></h3>
+              <div ng-if="!state.selectedNode.$metricsPromise.$finished">Loading project	metrics			</div>
+              <ul ng-if="state.selectedNode.$metricsPromise.$finished" class="metric-readout">
+                <li ng-repeat="(metricName, metricValue) in state.selectedNode.metrics"><span ng-bind="metricName"></span><span>&nbsp;:&nbsp;</span><span ng-bind="metricValue.value"></span></li>
+              </ul>
+            </div>
+            <div ng-if="!state.selectedNode">Choose a project to get metric information</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/apps/2.0rc3/sdk.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/jquery/2.1.1/dist/jquery.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/angular/1.2.23/angular.min.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/angular-sanitize/1.2.23/angular-sanitize.js"></script>
+    <script src="/insight/static/sdpi/app.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/async/0.9.0/lib/async.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/lodash/2.1.0/dist/lodash.min.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/moment/2.8.2/min/moment.min.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/rally-angular-appsdk/0.0.1/dist/rally.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/rui-angular/0.2.4/rui.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/Lumenize/0.7.4/deploy/Lumenize-min.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/validate/0.2.0/validate.min.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/angular-bootstrap/0.11.0/ui-bootstrap-tpls.min.js"></script>
+    <script>var RootCtrl,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+angular.module('insights.app.real.teams', ['ui.bootstrap', 'rui.tree', 'rally.app', 'rally.api.wsapi', 'sdpi.api.services.metrics', 'insights.app.real.teams.tree']).config(function($slmProvider, $sdpiProvider) {
+  $slmProvider.setBaseUrl('//rally1.rallydev.com/slm/');
+  return $sdpiProvider.setBaseUrl('//rally1.rallydev.com/insight/');
+}).run(function($rally, $rootScope) {
+  if ($rootScope.app == null) {
+    $rootScope.app = {};
+  }
+  return $rally.launchApp('insights.app.real.teams').then(function(app) {
+    return _.merge($rootScope.app, app.getContext().map.map);
+  });
+}).constant('metricsToLoad', ['RealTeam', 'FullTimeEquivalent', 'TeamGrowth', 'TeamShrinkage', 'TeamStability', 'PercentDedicatedWork', 'DedicatedTeamSize', 'InProgressStoryCount', 'WorkInProgress', 'WorkInProgressPerFullTimeEquivalent']).controller('RootCtrl', RootCtrl = (function() {
+  function RootCtrl($scope, $wsapi, $sdpi, metricsToLoad) {
+    var _base;
+    this.$scope = $scope;
+    this.$wsapi = $wsapi;
+    this.$sdpi = $sdpi;
+    this.metricsToLoad = metricsToLoad;
+    this.loadMetrics = __bind(this.loadMetrics, this);
+    this.watchProjectScope = __bind(this.watchProjectScope, this);
+    if ((_base = this.$scope).state == null) {
+      _base.state = {
+        startOn: moment().subtract('months', 1).format('YYYY-MM'),
+        endBefore: moment().format('YYYY-MM')
+      };
+    }
+    this.$scope.$watchCollection('[app.project, app.workspace]', this.watchProjectScope);
+  }
+
+  RootCtrl.prototype.watchProjectScope = function(_arg) {
+    var project, projectScope, workspace;
+    project = _arg[0], workspace = _arg[1];
+    if (!((project != null) || (workspace != null))) {
+      return;
+    }
+    this.$scope.state.projectScope = projectScope = project;
+    project.oid = project.ObjectID;
+    project.workspaceOid = workspace.ObjectID;
+    this.$scope.state.projectPromise = this.$wsapi.projects.scope(projectScope, 'down').then(function() {}, function() {}, (function(_this) {
+      return function(projectScope) {
+        return _this.loadMetrics(projectScope);
+      };
+    })(this))["finally"]((function(_this) {
+      return function() {
+        return _this.$scope.state.projectPromise.$finished = true;
+      };
+    })(this));
+    this.$scope.state.projectPromise.$finished = false;
+    this.$scope.state.nodes = [projectScope];
+    return this.$scope.state.selectedNode = projectScope;
+  };
+
+  RootCtrl.prototype.loadMetrics = function(projectScope) {
+    projectScope.$metricsPromise = this.$sdpi.metrics.data({
+      projects: projectScope.oid,
+      workspaces: projectScope.workspaceOid,
+      'start-date': this.$scope.state.startOn,
+      'end-date': this.$scope.state.endBefore,
+      granularity: 'month',
+      metrics: this.metricsToLoad.join(','),
+      'jsonp': 'JSON_CALLBACK'
+    }, {
+      method: 'JSONP'
+    }).then((function(_this) {
+      return function(result) {
+        var dataPoint, scope, timePeriod;
+        timePeriod = {
+          month: _this.$scope.state.startOn
+        };
+        scope = _.find(result.data.scopes, {
+          oid: "" + projectScope.oid
+        });
+        if (scope == null) {
+          return null;
+        }
+        dataPoint = _.find(scope != null ? scope.dataPoints : void 0, timePeriod);
+        return dataPoint;
+      };
+    })(this)).then(function(dataPoint) {
+      return projectScope.metrics = dataPoint != null ? dataPoint.data : void 0;
+    })["finally"](function() {
+      return projectScope.$metricsPromise.$finished = true;
+    });
+    return projectScope.$metricsPromise.$finished = false;
+  };
+
+  return RootCtrl;
+
+})());
+
+angular.module('insights.app.real.teams.tree', ['rui.tree']).directive('ruiTreeNodeContent', function() {
+  return {
+    compile: function($element, $attrs) {
+      $element.append('<span ng-if="!$ruiTreeNode.node.$metricsPromise.$finished" class="icon-progress icon-spin"></span>\n<span ng-if="$ruiTreeNode.node.$metricsPromise.$finished">\n	<span class="icon-shared" \n		ng-if="$ruiTreeNode.node.metrics.RealTeam.value", \n		tooltip="Identified as a Real Team with FTE {{$ruiTreeNode.node.metrics.FullTimeEquivalent.value | number:2 }}", \n		tooltip-placement="right"\n		tooltip-append-to-body="true"\n		></span>\n</span>');
+      return function() {};
+    }
+  };
+});
+
+    </script>
+  </body>
+</html>

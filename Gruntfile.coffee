@@ -1,44 +1,58 @@
 matchdep = require('matchdep')
 path = require('path')
+bowerCdn = require('bower-cdn')
 
 module.exports = (grunt) ->
 	
 	grunt.registerTask('test', ['karma:unit'])
-	grunt.registerTask('build', ['clean:build', 'jade:build', 'stylus:build', 'coffee:build'])
-	grunt.registerTask('default', ['test', 'build']);
+	grunt.registerTask('dist', ['clean:dist', 'stylus:dist', 'coffee:dist', 'jade:dist'])
+	grunt.registerTask('default', ['test', 'dist']);
 	
 	# Load all grunt tasks (except grunt-cli) from NPM
 	matchdep.filterDev('grunt-*').filter((dep) -> dep != 'grunt-cli').forEach(grunt.loadNpmTasks)    
+
+	cdnResolver = new bowerCdn.resolver(
+		bowerShrinkWrap: 'bower-shrinkwrap.json'
+		bowerPrefix: 'bower_components'
+		nodeEnv: 'production'
+		cdnUrl: '//bowercdn.f4tech.com/'
+		packageType: 'bower'
+		strict: grunt.option('strict') || false;
+	)
 	
 	grunt.initConfig
 		jade:
-			build:
+			options:
+				pretty: true
+				data:					
+					cdn: cdnResolver.cdn
+			dist:
 				files: 
-					"build/index.html": ["src/index.jade"]
+					"dist/index.html": ["src/index.jade"]
 		karma:
 			unit:
 				configFile: 'karma.conf.js'
 		clean:
-			build: 'build'
+			dist: 'dist'
 
 		watch:
 			files: 'src/**/*.*'
-			tasks: ['build']
+			tasks: ['dist']
 			options:
 				interrupt: true
 
 		coffee:
-			build:
+			dist:
 				options:
 					bare: true
 					join: true
 				expand: true
 				flatten: false
 				files:
-					'build/index.js': ['src/**/*.coffee']
+					'dist/index.js': ['src/**/*.coffee']
 
 		stylus:
-			build:
+			dist:
 				options:
 					paths: [
 						path.join(__dirname, 'node_modules')
@@ -47,5 +61,5 @@ module.exports = (grunt) ->
 						'nib'
 					]
 				files: 
-					'build/index.css': 'src/index.styl'
+					'dist/index.css': 'src/index.styl'
 					
