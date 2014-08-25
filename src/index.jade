@@ -9,7 +9,7 @@ html
 		link(rel='stylesheet', href=cdn('bower_components/rui-angular/assets/css/styles.css'))
 		style
 			include ../dist/index.css
-	body
+	body(ng-app='insights.app.real.teams')
 		div(ng-controller="RootCtrl")
 			.loading(ng-if="!state.projectPromise.$finished") Loading child projects
 

@@ -15,7 +15,7 @@ module.exports = (grunt) ->
 		bowerShrinkWrap: 'bower-shrinkwrap.json'
 		bowerPrefix: 'bower_components'
 		nodeEnv: 'production'
-		cdnUrl: '//bowercdn.f4tech.com:3000/'
+		cdnUrl: '//bowercdn.f4tech.com/'
 		packageType: 'bower'
 		strict: grunt.option('strict') || false;
 	)

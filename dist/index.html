@@ -2,15 +2,15 @@
 <html>
   <head>
     <title>Insights SDPI Real Teams</title>
-    <link rel="stylesheet" href="//bowercdn.f4tech.com:3000/bower/bootstrap/3.1.1/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//bowercdn.f4tech.com:3000/bower/rally-style/0.2.15/dist/rally.css">
-    <link rel="stylesheet" href="//bowercdn.f4tech.com:3000/bower/rally-style/0.2.15/dist/bootstrap3-overrides.css">
-    <link rel="stylesheet" href="//bowercdn.f4tech.com:3000/bower/rally-style/0.2.15/dist/icons.css">
-    <link rel="stylesheet" href="//bowercdn.f4tech.com:3000/bower/rui-angular/0.2.4/assets/css/styles.css">
+    <link rel="stylesheet" href="//bowercdn.f4tech.com/bower/bootstrap/3.1.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//bowercdn.f4tech.com/bower/rally-style/0.2.15/dist/rally.css">
+    <link rel="stylesheet" href="//bowercdn.f4tech.com/bower/rally-style/0.2.15/dist/bootstrap3-overrides.css">
+    <link rel="stylesheet" href="//bowercdn.f4tech.com/bower/rally-style/0.2.15/dist/icons.css">
+    <link rel="stylesheet" href="//bowercdn.f4tech.com/bower/rui-angular/0.2.4/assets/css/styles.css">
     <style>.app,body >.x-container{display:none}body{overflow:auto !important}ul.rui-tree{padding-left:0;}ul.rui-tree:not(.rui-tree-node-subtree){margin-left:0}h3{margin-top:0}.project-picker >div{margin-left:10px}.project-picker,.project-information{overflow:auto;padding:0}
     </style>
   </head>
-  <body>
+  <body ng-app="insights.app.real.teams">
     <div ng-controller="RootCtrl">
       <div ng-if="!state.projectPromise.$finished" class="loading">Loading child projects</div>
       <div ng-if="state.projectPromise.$finished" class="container-fluid">
@@ -37,18 +37,18 @@
       </div>
     </div>
     <script src="/apps/2.0rc3/sdk.js"></script>
-    <script src="//bowercdn.f4tech.com:3000/bower/jquery/2.1.1/dist/jquery.js"></script>
-    <script src="//bowercdn.f4tech.com:3000/bower/angular/1.2.23/angular.min.js"></script>
-    <script src="//bowercdn.f4tech.com:3000/bower/angular-sanitize/1.2.23/angular-sanitize.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/jquery/2.1.1/dist/jquery.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/angular/1.2.23/angular.min.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/angular-sanitize/1.2.23/angular-sanitize.js"></script>
     <script src="/insight/static/sdpi/app.js"></script>
-    <script src="//bowercdn.f4tech.com:3000/bower/async/0.9.0/lib/async.js"></script>
-    <script src="//bowercdn.f4tech.com:3000/bower/lodash/2.1.0/dist/lodash.min.js"></script>
-    <script src="//bowercdn.f4tech.com:3000/bower/moment/2.8.2/min/moment.min.js"></script>
-    <script src="//bowercdn.f4tech.com:3000/bower/rally-angular-appsdk/0.0.1/dist/rally.js"></script>
-    <script src="//bowercdn.f4tech.com:3000/bower/rui-angular/0.2.4/rui.js"></script>
-    <script src="//bowercdn.f4tech.com:3000/bower/Lumenize/0.7.4/deploy/Lumenize-min.js"></script>
-    <script src="//bowercdn.f4tech.com:3000/bower/validate/0.2.0/validate.min.js"></script>
-    <script src="//bowercdn.f4tech.com:3000/bower/angular-bootstrap/0.11.0/ui-bootstrap-tpls.min.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/async/0.9.0/lib/async.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/lodash/2.1.0/dist/lodash.min.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/moment/2.8.2/min/moment.min.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/rally-angular-appsdk/0.0.1/dist/rally.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/rui-angular/0.2.4/rui.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/Lumenize/0.7.4/deploy/Lumenize-min.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/validate/0.2.0/validate.min.js"></script>
+    <script src="//bowercdn.f4tech.com/bower/angular-bootstrap/0.11.0/ui-bootstrap-tpls.min.js"></script>
     <script>var RootCtrl,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
