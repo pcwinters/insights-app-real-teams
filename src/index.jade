@@ -1,28 +1,60 @@
-div(ng-controller="RootCtrl")
-	.loading(ng-if="!state.projectPromise.$finished") Loading child projects
+doctype html
+html
+	head
+		title Insights SDPI Real Teams
+		link(rel='stylesheet', href=cdn('bower_components/bootstrap/dist/css/bootstrap.min.css'))
+		link(rel='stylesheet', href=cdn('bower_components/rally-style/dist/rally.css'))
+		link(rel='stylesheet', href=cdn('bower_components/rally-style/dist/bootstrap3-overrides.css'))
+		link(rel='stylesheet', href=cdn('bower_components/rally-style/dist/icons.css'))
+		link(rel='stylesheet', href=cdn('bower_components/rui-angular/assets/css/styles.css'))
+		style
+			include ../build/index.css
+	body
+		div(ng-controller="RootCtrl")
+			.loading(ng-if="!state.projectPromise.$finished") Loading child projects
 
-	.container-fluid(ng-if="state.projectPromise.$finished")
-		.row
-			.col-xs-3.project-picker
-				div
-					div.search
-						input(type="text", ng-model="state.searchTerm", placeholder="Filter by name")
-						//- span.search-indicators
-						//- 	span.search-in-progress.icon-progress.icon-spin(ng-if="$ruiAlmProjectPicker.searchInProgress")
-						//- 	a.clear-search.icon-cancel(ng-if="$ruiAlmProjectPicker.isSearching", ng-click="state.searchTerm=''")
-					ul.rui-tree-outline(
-						rui-tree="state.nodes track by ObjectID", 
-						rui-tree-expandable="startExpanded",
-						rui-tree-selectable="deselect",
-						rui-tree-selected-node="state.selectedNode"
-						rui-tree-search="state.searchTerm search by Name")
-			.col-xs-9.project-information
-				div(ng-if="state.selectedNode")
-					h3(ng-bind='state.selectedNode.Name')
-					div(ng-if="!state.selectedNode.$metricsPromise.$finished") Loading project	metrics			
-					ul.metric-readout(ng-if="state.selectedNode.$metricsPromise.$finished")
-						li(ng-repeat="(metricName, metricValue) in state.selectedNode.metrics")
-							span(ng-bind="metricName")
-							span &nbsp;:&nbsp;
-							span(ng-bind="metricValue.value")
-				div(ng-if="!state.selectedNode") Choose a project to get metric information
+			.container-fluid(ng-if="state.projectPromise.$finished")
+				.row
+					.col-xs-3.project-picker
+						div
+							div.search
+								input(type="text", ng-model="state.searchTerm", placeholder="Filter by name")
+								//- span.search-indicators
+								//- 	span.search-in-progress.icon-progress.icon-spin(ng-if="$ruiAlmProjectPicker.searchInProgress")
+								//- 	a.clear-search.icon-cancel(ng-if="$ruiAlmProjectPicker.isSearching", ng-click="state.searchTerm=''")
+							ul.rui-tree-outline(
+								rui-tree="state.nodes track by ObjectID", 
+								rui-tree-expandable="startExpanded",
+								rui-tree-selectable="deselect",
+								rui-tree-selected-node="state.selectedNode"
+								rui-tree-search="state.searchTerm search by Name")
+					.col-xs-9.project-information
+						div(ng-if="state.selectedNode")
+							h3(ng-bind='state.selectedNode.Name')
+							div(ng-if="!state.selectedNode.$metricsPromise.$finished") Loading project	metrics			
+							ul.metric-readout(ng-if="state.selectedNode.$metricsPromise.$finished")
+								li(ng-repeat="(metricName, metricValue) in state.selectedNode.metrics")
+									span(ng-bind="metricName")
+									span &nbsp;:&nbsp;
+									span(ng-bind="metricValue.value")
+						div(ng-if="!state.selectedNode") Choose a project to get metric information
+
+
+		
+		script(src="/apps/2.0rc3/sdk.js")
+		script(src=cdn("bower_components/jquery/dist/jquery.js"))
+		script(src=cdn("bower_components/angular/angular.min.js"))
+		script(src=cdn("bower_components/angular-sanitize/angular-sanitize.js"))
+		
+		script(src="/insight/static/sdpi/app.js")
+
+		script(src=cdn("bower_components/async/lib/async.js"))
+		script(src=cdn("bower_components/lodash/dist/lodash.min.js"))
+		script(src=cdn("bower_components/moment/min/moment.min.js"))
+		script(src=cdn("bower_components/rally-angular-appsdk/dist/rally.js"))
+		script(src=cdn("bower_components/rui-angular/rui.js"))
+		script(src=cdn("bower_components/Lumenize/deploy/Lumenize-min.js"))
+		script(src=cdn("bower_components/validate/validate.min.js"))
+		script(src=cdn("bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"))
+		script
+			include ../build/index.js

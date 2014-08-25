@@ -16,13 +16,13 @@
     "matchdep": "^0.3.0",
     "tmp": "0.0.23",
     "grunt-contrib-clean": "^0.5.0",
-    "rally-app-builder": "^0.9.8",
     "grunt-contrib-stylus": "^0.18.0",
     "jshint": "^2.5.2",
-    "grunt-contrib-watch": "^0.6.1"
+    "grunt-contrib-watch": "^0.6.1",
+    "bower-cdn": "RallySoftware/bower-cdn#0.0.1"
   },
   "scripts": {
-    "test": "grunt",
-    "postinstall": "./node_modules/bower/bin/bower install"
+    "postinstall": "./node_modules/bower/bin/bower install",
+    "test": "grunt test"
   }
 }

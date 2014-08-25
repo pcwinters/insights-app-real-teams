@@ -1,0 +1,637 @@
+[
+    {
+        "name": "Lumenize",
+        "version": "0.7.4",
+        "homepage": "https://github.com/lmaccherone/Lumenize",
+        "authors": [
+            "Larry Maccherone"
+        ],
+        "main": "deploy/Lumenize-min.js",
+        "license": "MIT",
+        "ignore": [
+            "/*",
+            "!deploy/*"
+        ],
+        "_release": "0.7.4",
+        "_resolution": {
+            "type": "version",
+            "tag": "v0.7.4",
+            "commit": "508da40971e7b2a68cdb256344da766090043cf0"
+        },
+        "_source": "git://github.com/RallySoftware/Lumenize.git",
+        "_target": "~0.7.4",
+        "_originalSource": "Lumenize",
+        "_shrinkWrapPackageDirectory": "Lumenize"
+    },
+    {
+        "name": "angular",
+        "version": "1.2.23",
+        "main": "./angular.js",
+        "dependencies": {},
+        "homepage": "https://github.com/angular/bower-angular",
+        "_release": "1.2.23",
+        "_resolution": {
+            "type": "version",
+            "tag": "v1.2.23",
+            "commit": "53716560a512e598c32c5dbc70b2e41a793443e9"
+        },
+        "_source": "git://github.com/angular/bower-angular.git",
+        "_target": "~1.2.20",
+        "_originalSource": "angular",
+        "_shrinkWrapPackageDirectory": "angular"
+    },
+    {
+        "name": "angular-animate",
+        "version": "1.2.23",
+        "main": "./angular-animate.js",
+        "dependencies": {
+            "angular": "1.2.23"
+        },
+        "homepage": "https://github.com/angular/bower-angular-animate",
+        "_release": "1.2.23",
+        "_resolution": {
+            "type": "version",
+            "tag": "v1.2.23",
+            "commit": "a5b1e7109e5b9a0276540cdafc92d6fedfec8da5"
+        },
+        "_source": "git://github.com/angular/bower-angular-animate.git",
+        "_target": "~1.2",
+        "_originalSource": "angular-animate",
+        "_shrinkWrapPackageDirectory": "angular-animate"
+    },
+    {
+        "author": {
+            "name": "https://github.com/angular-ui/bootstrap/graphs/contributors"
+        },
+        "name": "angular-bootstrap",
+        "version": "0.11.0",
+        "main": [
+            "./ui-bootstrap-tpls.js"
+        ],
+        "dependencies": {
+            "angular": ">=1"
+        },
+        "homepage": "https://github.com/angular-ui/bootstrap-bower",
+        "_release": "0.11.0",
+        "_resolution": {
+            "type": "version",
+            "tag": "0.11.0",
+            "commit": "75b302f82c1a3b0647695a3dfeacab0a153ea8a0"
+        },
+        "_source": "git://github.com/angular-ui/bootstrap-bower.git",
+        "_target": "~0.11.0",
+        "_originalSource": "angular-bootstrap",
+        "_shrinkWrapPackageDirectory": "angular-bootstrap"
+    },
+    {
+        "name": "angular-mocks",
+        "version": "1.2.23",
+        "main": "./angular-mocks.js",
+        "dependencies": {
+            "angular": "1.2.23"
+        },
+        "homepage": "https://github.com/angular/bower-angular-mocks",
+        "_release": "1.2.23",
+        "_resolution": {
+            "type": "version",
+            "tag": "v1.2.23",
+            "commit": "f15ecc4f747ba1df3e75374a8d76494086dbcb38"
+        },
+        "_source": "git://github.com/angular/bower-angular-mocks.git",
+        "_target": "~1.2.20",
+        "_originalSource": "angular-mocks",
+        "_shrinkWrapPackageDirectory": "angular-mocks"
+    },
+    {
+        "name": "angular-resource",
+        "version": "1.2.23",
+        "main": "./angular-resource.js",
+        "dependencies": {
+            "angular": "1.2.23"
+        },
+        "homepage": "https://github.com/angular/bower-angular-resource",
+        "_release": "1.2.23",
+        "_resolution": {
+            "type": "version",
+            "tag": "v1.2.23",
+            "commit": "0287cf7c4c49807e0df7a916572ef92be49360e4"
+        },
+        "_source": "git://github.com/angular/bower-angular-resource.git",
+        "_target": "~1.2",
+        "_originalSource": "angular-resource",
+        "_shrinkWrapPackageDirectory": "angular-resource"
+    },
+    {
+        "name": "angular-sanitize",
+        "version": "1.2.23",
+        "main": "./angular-sanitize.js",
+        "dependencies": {
+            "angular": "1.2.23"
+        },
+        "homepage": "https://github.com/angular/bower-angular-sanitize",
+        "_release": "1.2.23",
+        "_resolution": {
+            "type": "version",
+            "tag": "v1.2.23",
+            "commit": "c64ed360a0ee54d4f56da6ab84904478c2423628"
+        },
+        "_source": "git://github.com/angular/bower-angular-sanitize.git",
+        "_target": "~1.2",
+        "_originalSource": "angular-sanitize",
+        "_shrinkWrapPackageDirectory": "angular-sanitize"
+    },
+    {
+        "name": "angular-ui-utils",
+        "version": "0.1.1",
+        "main": "./ui-utils.js",
+        "dependencies": {
+            "angular": ">= 1.0.2"
+        },
+        "homepage": "https://github.com/angular-ui/ui-utils",
+        "_release": "0.1.1",
+        "_resolution": {
+            "type": "version",
+            "tag": "v0.1.1",
+            "commit": "e25586548ff0a61df63bd4eb8fdc0715b1a87e72"
+        },
+        "_source": "git://github.com/angular-ui/ui-utils.git",
+        "_target": "~0.1.1",
+        "_originalSource": "angular-ui-utils",
+        "_shrinkWrapPackageDirectory": "angular-ui-utils"
+    },
+    {
+        "name": "angulartics",
+        "version": "0.16.1",
+        "main": [
+            "src/angulartics.js",
+            "src/angulartics-adobe.js",
+            "src/angulartics-chartbeat.js",
+            "src/angulartics-flurry.js",
+            "src/angulartics-ga-cordova.js",
+            "src/angulartics-ga.js",
+            "src/angulartics-gtm.js",
+            "src/angulartics-kissmetrics.js",
+            "src/angulartics-mixpanel.js",
+            "src/angulartics-piwik.js",
+            "src/angulartics-scroll.js",
+            "src/angulartics-segmentio.js",
+            "src/angulartics-splunk.js",
+            "src/angulartics-woopra.js"
+        ],
+        "dependencies": {
+            "angular": ">= 1.0.7",
+            "jquery-waypoints": "~v2.0.3"
+        },
+        "devDependencies": {
+            "angular-mocks": ">= 1.0.7",
+            "angular-route": "~1.2",
+            "angular-ui-router": "~0.2"
+        },
+        "homepage": "https://github.com/RallySoftware/angulartics",
+        "_release": "0.16.1",
+        "_resolution": {
+            "type": "version",
+            "tag": "0.16.1",
+            "commit": "b35cef92d240b7827d1cb3d6920ab74a2247f074"
+        },
+        "_source": "git://github.com/RallySoftware/angulartics.git",
+        "_target": "0.16.1",
+        "_originalSource": "RallySoftware/angulartics",
+        "_shrinkWrapPackageDirectory": "angulartics"
+    },
+    {
+        "name": "async",
+        "homepage": "https://github.com/caolan/async",
+        "version": "0.9.0",
+        "_release": "0.9.0",
+        "_resolution": {
+            "type": "version",
+            "tag": "0.9.0",
+            "commit": "5f62a1bcdda2bc961797ecac8c683128dbdf0aaf"
+        },
+        "_source": "git://github.com/caolan/async.git",
+        "_target": "~0.9.0",
+        "_originalSource": "async",
+        "_shrinkWrapPackageDirectory": "async"
+    },
+    {
+        "name": "bootstrap",
+        "version": "3.1.1",
+        "main": [
+            "./dist/css/bootstrap.css",
+            "./dist/js/bootstrap.js",
+            "./dist/fonts/glyphicons-halflings-regular.eot",
+            "./dist/fonts/glyphicons-halflings-regular.svg",
+            "./dist/fonts/glyphicons-halflings-regular.ttf",
+            "./dist/fonts/glyphicons-halflings-regular.woff"
+        ],
+        "ignore": [
+            "**/.*",
+            "_config.yml",
+            "CNAME",
+            "composer.json",
+            "CONTRIBUTING.md",
+            "docs",
+            "js/tests"
+        ],
+        "dependencies": {
+            "jquery": ">= 1.9.0"
+        },
+        "homepage": "https://github.com/twbs/bootstrap",
+        "_release": "3.1.1",
+        "_resolution": {
+            "type": "version",
+            "tag": "v3.1.1",
+            "commit": "a365d8689c3f3cee7f1acf86b61270ecca8e106d"
+        },
+        "_source": "git://github.com/twbs/bootstrap.git",
+        "_target": "~3.1.1",
+        "_originalSource": "bootstrap",
+        "_shrinkWrapPackageDirectory": "bootstrap"
+    },
+    {
+        "name": "highcharts",
+        "version": "3.0.10",
+        "main": [
+            "highcharts.js",
+            "highcharts-more.js",
+            "modules/exporting.src.js"
+        ],
+        "homepage": "https://github.com/highslide-software/highcharts-release",
+        "_release": "3.0.10",
+        "_resolution": {
+            "type": "version",
+            "tag": "v3.0.10",
+            "commit": "fd996d6b50ae1a6552738cbb9e9b0cdbd0fc6324"
+        },
+        "_source": "git://github.com/highslide-software/highcharts-release.git",
+        "_target": "~3.0",
+        "_originalSource": "highcharts",
+        "_shrinkWrapPackageDirectory": "highcharts"
+    },
+    {
+        "name": "jquery",
+        "version": "2.1.1",
+        "main": "dist/jquery.js",
+        "license": "MIT",
+        "ignore": [
+            "**/.*",
+            "build",
+            "speed",
+            "test",
+            "*.md",
+            "AUTHORS.txt",
+            "Gruntfile.js",
+            "package.json"
+        ],
+        "devDependencies": {
+            "sizzle": "1.10.19",
+            "requirejs": "2.1.10",
+            "qunit": "1.14.0",
+            "sinon": "1.8.1"
+        },
+        "keywords": [
+            "jquery",
+            "javascript",
+            "library"
+        ],
+        "homepage": "https://github.com/jquery/jquery",
+        "_release": "2.1.1",
+        "_resolution": {
+            "type": "version",
+            "tag": "2.1.1",
+            "commit": "4dec426aa2a6cbabb1b064319ba7c272d594a688"
+        },
+        "_source": "git://github.com/jquery/jquery.git",
+        "_target": ">= 1.9.0",
+        "_originalSource": "jquery",
+        "_shrinkWrapPackageDirectory": "jquery"
+    },
+    {
+        "name": "jquery-ui",
+        "version": "1.11.1",
+        "main": [
+            "jquery-ui.js"
+        ],
+        "ignore": [],
+        "dependencies": {
+            "jquery": ">=1.6"
+        },
+        "homepage": "https://github.com/components/jqueryui",
+        "_release": "1.11.1",
+        "_resolution": {
+            "type": "version",
+            "tag": "1.11.1",
+            "commit": "39890e8599bdd79c423ea21b967195106800b87d"
+        },
+        "_source": "git://github.com/components/jqueryui.git",
+        "_target": "~1.11.0",
+        "_originalSource": "jquery-ui",
+        "_shrinkWrapPackageDirectory": "jquery-ui"
+    },
+    {
+        "name": "jquery-waypoints",
+        "version": "2.0.5",
+        "main": "waypoints.js",
+        "description": "A jQuery plugin that makes it easy to execute a function whenever you scroll to an element.",
+        "ignore": [
+            "**/.*",
+            "**/*.coffee",
+            "**/*.html",
+            "bower_components",
+            "examples",
+            "node_modules",
+            "Makefile",
+            "test"
+        ],
+        "dependencies": {
+            "jquery": ">=1.8"
+        },
+        "homepage": "https://github.com/imakewebthings/jquery-waypoints",
+        "_release": "2.0.5",
+        "_resolution": {
+            "type": "version",
+            "tag": "v2.0.5",
+            "commit": "415eb556fc99b1475bd3b221f29c21eb4388c40c"
+        },
+        "_source": "git://github.com/imakewebthings/jquery-waypoints.git",
+        "_target": "~v2.0.3",
+        "_originalSource": "jquery-waypoints",
+        "_shrinkWrapPackageDirectory": "jquery-waypoints"
+    },
+    {
+        "name": "lodash",
+        "version": "2.1.0",
+        "main": "dist/lodash.compat.js",
+        "ignore": [
+            ".*",
+            "*.custom.*",
+            "*.template.*",
+            "*.map",
+            "*.md",
+            "/*.min.*",
+            "/lodash.js",
+            "index.js",
+            "component.json",
+            "package.json",
+            "doc",
+            "modularize",
+            "node_modules",
+            "perf",
+            "test",
+            "vendor"
+        ],
+        "homepage": "https://github.com/lodash/lodash",
+        "_release": "2.1.0",
+        "_resolution": {
+            "type": "version",
+            "tag": "2.1.0",
+            "commit": "2114126a864d2a12bb3ac733b370ed9e910f0a12"
+        },
+        "_source": "git://github.com/lodash/lodash.git",
+        "_target": "~2.1",
+        "_originalSource": "lodash",
+        "_shrinkWrapPackageDirectory": "lodash"
+    },
+    {
+        "name": "moment",
+        "version": "2.8.2",
+        "main": "moment.js",
+        "ignore": [
+            "**/.*",
+            "node_modules",
+            "bower_components",
+            "test",
+            "tests",
+            "tasks",
+            "component.json",
+            "composer.json",
+            "CONTRIBUTING.md",
+            "ender.js",
+            "Gruntfile.js",
+            "package.js",
+            "package.json"
+        ],
+        "homepage": "https://github.com/moment/moment",
+        "_release": "2.8.2",
+        "_resolution": {
+            "type": "version",
+            "tag": "2.8.2",
+            "commit": "c4c47a7793dfc116acd1356f668eb1a182e29d68"
+        },
+        "_source": "git://github.com/moment/moment.git",
+        "_target": "~2.8.2",
+        "_originalSource": "moment",
+        "_direct": true,
+        "_shrinkWrapPackageDirectory": "moment"
+    },
+    {
+        "name": "ng-q-denodeify",
+        "version": "0.0.1",
+        "main": "dist/ng-q-denodeify.js",
+        "ignore": [
+            "src",
+            "test",
+            "**/.*",
+            "bower_components",
+            "node_modules"
+        ],
+        "dependencies": {
+            "lodash": "~2",
+            "angular": "~1.2",
+            "angular-mocks": "~1.2"
+        },
+        "license": "MIT",
+        "keywords": [
+            "promise",
+            "callback",
+            "angular",
+            "Q",
+            "$q"
+        ],
+        "authors": [
+            "Patrick Winters <pwinters@rallydev.com>"
+        ],
+        "homepage": "https://github.com/pcw216/ng-q-denodeify",
+        "repository": "git@github.com:pcw216/ng-q-denodeify.git",
+        "description": "Decorates ng $q with 'denodeify' support",
+        "_release": "0.0.1",
+        "_resolution": {
+            "type": "version",
+            "tag": "0.0.1",
+            "commit": "04c6dad55b8c68922799388c72b3150d62986c40"
+        },
+        "_source": "git://github.com/pcw216/ng-q-denodeify.git",
+        "_target": "~0.0.1",
+        "_originalSource": "ng-q-denodeify",
+        "_shrinkWrapPackageDirectory": "ng-q-denodeify"
+    },
+    {
+        "name": "rally-angular-appsdk",
+        "version": "0.0.1",
+        "ignore": [
+            "node_modules",
+            "bower_components",
+            "test",
+            "src"
+        ],
+        "dependencies": {
+            "angular": "~1.2.0",
+            "lodash": "~2.1.0"
+        },
+        "devDependencies": {
+            "angular-mocks": "~1.2.0",
+            "jasmine.async": "derickbailey/jasmine.async#~0.1.0"
+        },
+        "homepage": "https://github.com/pcw216/angular-appsdk",
+        "_release": "0.0.1",
+        "_resolution": {
+            "type": "version",
+            "tag": "v0.0.1",
+            "commit": "c55563f4ce36e1adbe1aad9f4a10a8d9e5f3d038"
+        },
+        "_source": "git://github.com/pcw216/angular-appsdk.git",
+        "_target": "~0.0.1",
+        "_originalSource": "rally-angular-appsdk",
+        "_shrinkWrapPackageDirectory": "rally-angular-appsdk"
+    },
+    {
+        "name": "rally-style",
+        "version": "0.2.15",
+        "main": "dist/rally.css",
+        "ignore": [
+            ".gitignore",
+            "package.json",
+            "bower.json",
+            "Gruntfile.coffee",
+            "stylesheets",
+            "node_modules"
+        ],
+        "_release": "0.2.15",
+        "_resolution": {
+            "type": "version",
+            "tag": "v0.2.15",
+            "commit": "52c3c66f726bfc12bb12ecddf33b7a24bcd8d0dd"
+        },
+        "_source": "git@github.com:/RallySoftware/rally-style.git",
+        "_target": "v0.2.15",
+        "_originalSource": "git@github.com:/RallySoftware/rally-style.git",
+        "_shrinkWrapPackageDirectory": "rally-style"
+    },
+    {
+        "name": "rallymetrics",
+        "homepage": "https://github.com/RallySoftware/clientmetrics",
+        "version": "0.4.1",
+        "_release": "0.4.1",
+        "_resolution": {
+            "type": "version",
+            "tag": "0.4.1",
+            "commit": "d2cb2070e9db0a8c863d5bf3fc37347988884b68"
+        },
+        "_source": "git://github.com/RallySoftware/clientmetrics.git",
+        "_target": "v0.4.1",
+        "_originalSource": "git://github.com/RallySoftware/clientmetrics.git",
+        "_shrinkWrapPackageDirectory": "rallymetrics"
+    },
+    {
+        "name": "rui-angular",
+        "version": "0.2.4",
+        "authors": [
+            "Patrick Winters <pwinters@rallydev.com>",
+            "Nicholas Boll <nicholas.boll@gmail.com>"
+        ],
+        "license": "MIT",
+        "ignore": [
+            "**/.*",
+            "node_modules",
+            "bower_components",
+            "test",
+            "tests"
+        ],
+        "dependencies": {
+            "angular": "~1.2",
+            "angular-animate": "~1.2",
+            "angular-sanitize": "~1.2",
+            "angular-resource": "~1.2",
+            "bootstrap": "~3.0",
+            "jquery": "~1.10",
+            "jquery-ui": "~1.11.0",
+            "lodash": "~2.1",
+            "highcharts": "~3.0",
+            "async": "~0.7.0",
+            "angular-ui-utils": "~0.1.1",
+            "angulartics": "RallySoftware/angulartics#0.16.1",
+            "zone": "~0.3.0",
+            "rallymetrics": "git://github.com/RallySoftware/clientmetrics.git#v0.4.1",
+            "angular-bootstrap": "~0.11.0",
+            "rally-style": "git@github.com:/RallySoftware/rally-style.git#v0.2.15"
+        },
+        "devDependencies": {
+            "angular-mocks": "~1.2",
+            "sinon": "~1.7",
+            "jasmine-sinon": "~0.3",
+            "jasmine-jquery": "1.7.0"
+        },
+        "homepage": "https://github.com/RallySoftware/bower-rui-angular",
+        "_release": "0.2.4",
+        "_resolution": {
+            "type": "version",
+            "tag": "v0.2.4",
+            "commit": "af5c0d6f82695e1d75d639832ec769a91f421983"
+        },
+        "_source": "git://github.com/RallySoftware/bower-rui-angular.git",
+        "_target": "~0.2.4",
+        "_originalSource": "rui-angular",
+        "_shrinkWrapPackageDirectory": "rui-angular"
+    },
+    {
+        "name": "validate.js",
+        "main": [
+            "validate.js",
+            "validate.min.js"
+        ],
+        "version": "0.2.0",
+        "ignore": [
+            "**/.*",
+            "CNAME",
+            "docs",
+            "spec",
+            "*.md",
+            "*.html",
+            "Gruntfile.js",
+            "package.json",
+            "bower.json"
+        ],
+        "keywords": [
+            "validation",
+            "javascript",
+            "library"
+        ],
+        "homepage": "https://github.com/wrapp/validate.js",
+        "_release": "0.2.0",
+        "_resolution": {
+            "type": "version",
+            "tag": "0.2.0",
+            "commit": "2536ce34c94e347edf7f4fc8341882f3713f4f39"
+        },
+        "_source": "git://github.com/wrapp/validate.js.git",
+        "_target": "~0.2.0",
+        "_originalSource": "validate",
+        "_shrinkWrapPackageDirectory": "validate"
+    },
+    {
+        "name": "zone",
+        "homepage": "https://github.com/angular/zone.js",
+        "version": "0.3.0",
+        "_release": "0.3.0",
+        "_resolution": {
+            "type": "version",
+            "tag": "v0.3.0",
+            "commit": "7650a71b69b3351e4d7bb949e932abaf4d6dbacf"
+        },
+        "_source": "git://github.com/angular/zone.js.git",
+        "_target": "~0.3.0",
+        "_originalSource": "zone",
+        "_shrinkWrapPackageDirectory": "zone"
+    }
+]
